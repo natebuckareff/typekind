@@ -1,11 +1,32 @@
 {
-  "name": "ts",
-  "private": true,
-  "main": "index.js",
+  "name": "typekind",
+  "version": "0.0.1",
+  "author": "Nate Buckareff",
+  "description": "Simple types-as-schemas.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/natebuckareff/typekind"
+  },
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc src/index.ts",
-    "typeck": "tsc --noEmit"
+    "typeck": "tsc --noEmit",
+    "build": "pnpm run clean && tsc -p .",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm run build && pnpm run typeck"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.1",
