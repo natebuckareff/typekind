@@ -14,3 +14,7 @@ export interface Schema<T> {
 
   serializeSchema(): Json | Error;
 }
+
+export function isSchema(value: unknown): value is Schema<unknown> {
+  return typeof value === 'object' && value !== null && schemaSymbol in value;
+}

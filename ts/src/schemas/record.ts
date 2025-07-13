@@ -1,7 +1,7 @@
 import { Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
 import { Simplify } from './choice.js';
-import { OptionalSchema } from './optional.js';
+import { OptionSchema } from './option.js';
 
 export type RecordSpec = {
   [property: string]: Schema<any>;
@@ -9,13 +9,13 @@ export type RecordSpec = {
 
 export type InferRecordType<S extends RecordSpec> = Simplify<
   {
-    [K in keyof S as S[K] extends OptionalSchema<any>
+    [K in keyof S as S[K] extends OptionSchema<any>
       ? K
-      : never]?: S[K] extends OptionalSchema<infer U>
+      : never]?: S[K] extends OptionSchema<infer U>
       ? U['Type'] | undefined
       : never;
   } & {
-    [K in keyof S as S[K] extends OptionalSchema<any>
+    [K in keyof S as S[K] extends OptionSchema<any>
       ? never
       : K]: S[K] extends Schema<infer T> ? T : never;
   }
@@ -45,7 +45,7 @@ export class RecordSchema<S extends RecordSpec>
     for (const key in this.spec) {
       const spec = this.spec[key];
       const hasProperty = key in input;
-      const isOptional = spec instanceof OptionalSchema;
+      const isOptional = spec instanceof OptionSchema;
 
       if (!hasProperty && !isOptional) {
         return Error('missing required property');
@@ -105,7 +105,7 @@ export class RecordSchema<S extends RecordSpec>
     for (const key in this.spec) {
       const spec = this.spec[key];
       const hasProperty = key in input;
-      const isOptional = spec instanceof OptionalSchema;
+      const isOptional = spec instanceof OptionSchema;
 
       if (!hasProperty && !isOptional) {
         return Error('missing required property');

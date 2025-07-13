@@ -1,7 +1,7 @@
 import { Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
 
-export class OptionalSchema<S extends Schema<any>>
+export class OptionSchema<S extends Schema<any>>
   implements Schema<S['Type'] | undefined>
 {
   readonly [schemaSymbol] = undefined!;
@@ -65,7 +65,7 @@ export class OptionalSchema<S extends Schema<any>>
     }
 
     const schema: Json = {
-      $type: 'optional',
+      $type: 'option',
       param: serializedSchema,
     };
 

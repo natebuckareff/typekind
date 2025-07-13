@@ -1,14 +1,19 @@
-import * as tk from './builder.js';
+export * as tk from './builder.js';
 
-function main() {
-  const userSchema = tk.record({
-    id: tk.u64(),
-    value: tk.some(tk.i32()),
-    name: tk.string(),
-    deleted: tk.bool(),
-  });
+export * from './core.js';
+export * from './infer.js';
+export * from './json.js';
 
-  console.log('>>>', userSchema.serializeSchema());
-}
+export * from './schemas/array.js';
+export * from './schemas/bool.js';
+export * from './schemas/choice.js';
+export * from './schemas/option.js';
+export * from './schemas/record.js';
+export * from './schemas/string.js';
+export * from './schemas/timestamp.js';
 
-main();
+export * from './schemas/num/f64.js';
+export * from './schemas/num/i32.js';
+export * from './schemas/num/i64.js';
+export * from './schemas/num/u32.js';
+export * from './schemas/num/u64.js';

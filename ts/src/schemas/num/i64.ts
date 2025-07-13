@@ -10,7 +10,11 @@ export function isI64(value: bigint): value is I64 {
 }
 
 export function i64(value: bigint): I64 {
-  return BigInt.asIntN(64, value) as I64;
+  if (typeof value === 'bigint') {
+    return BigInt.asIntN(64, value) as I64;
+  } else {
+    return BigInt.asIntN(64, BigInt(value)) as I64;
+  }
 }
 
 export class I64Schema implements Schema<I64> {

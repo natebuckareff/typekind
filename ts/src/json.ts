@@ -8,10 +8,9 @@ export type Json =
   | Json[]
   | { [key: string]: Json };
 
-export class JsonSchema implements Schema<Json, {}> {
+export class JsonSchema implements Schema<Json> {
   readonly [schemaSymbol] = undefined!;
-  readonly Type = undefined!;
-  readonly Metadata = {};
+  readonly Type: Json = undefined!;
 
   serialize(input: Json): Json | Error {
     return input;

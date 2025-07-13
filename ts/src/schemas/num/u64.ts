@@ -9,8 +9,12 @@ export function isU64(value: bigint): value is U64 {
   return BigInt.asUintN(64, value) === value;
 }
 
-export function u64(value: bigint): U64 {
-  return BigInt.asUintN(64, value) as U64;
+export function u64(value: bigint | number | string): U64 {
+  if (typeof value === 'bigint') {
+    return BigInt.asUintN(64, value) as U64;
+  } else {
+    return BigInt.asUintN(64, BigInt(value)) as U64;
+  }
 }
 
 export class U64Schema implements Schema<U64> {

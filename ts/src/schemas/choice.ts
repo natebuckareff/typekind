@@ -2,12 +2,14 @@ import { Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
 
 export type ChoiceSpec = {
-  [property: string]: Schema<any>;
+  [property: string]: Schema<any> | null;
 };
 
 export type InferChoiceType<S extends ChoiceSpec> = Simplify<
   {
-    [K in keyof S]: S[K] extends Schema<infer T> ? T : never;
+    [K in keyof S]: {
+      [P in K]: S[K] extends Schema<infer T> ? T : null;
+    };
   }[keyof S]
 >;
 
@@ -44,14 +46,24 @@ export class ChoiceSchema<S extends ChoiceSpec>
 
     for (const key in this.spec) {
       const spec = this.spec[key];
-      const serializedValue = spec.serialize(input);
 
-      if (serializedValue instanceof Error) {
-        error = serializedValue;
-        continue;
+      if (spec === null) {
+        if (input !== undefined) {
+          error = Error('expected unit value');
+          continue;
+        }
+
+        return null;
+      } else {
+        const serializedValue = spec.serialize(input);
+
+        if (serializedValue instanceof Error) {
+          error = serializedValue;
+          continue;
+        }
+
+        return serializedValue;
       }
-
-      return serializedValue;
     }
 
     if (!error) {
@@ -86,14 +98,24 @@ export class ChoiceSchema<S extends ChoiceSpec>
 
     for (const key in this.spec) {
       const spec = this.spec[key];
-      const deserializedValue = spec.deserialize(input);
 
-      if (deserializedValue instanceof Error) {
-        error = deserializedValue;
-        continue;
+      if (spec === null) {
+        if (input !== undefined) {
+          error = Error('expected unit value');
+          continue;
+        }
+
+        return { [key]: null } as InferChoiceType<S>;
+      } else {
+        const deserializedValue = spec.deserialize(input);
+
+        if (deserializedValue instanceof Error) {
+          error = deserializedValue;
+          continue;
+        }
+
+        return deserializedValue;
       }
-
-      return deserializedValue;
     }
 
     if (!error) {
@@ -110,13 +132,18 @@ export class ChoiceSchema<S extends ChoiceSpec>
 
     for (const key in this.spec) {
       const spec = this.spec[key];
-      const serializedSchema = spec.serializeSchema();
 
-      if (serializedSchema instanceof Error) {
-        return serializedSchema;
+      if (spec === null) {
+        schema[key] = null;
+      } else {
+        const serializedSchema = spec.serializeSchema();
+
+        if (serializedSchema instanceof Error) {
+          return serializedSchema;
+        }
+
+        schema[key] = serializedSchema;
       }
-
-      schema[key] = serializedSchema;
     }
 
     return schema;
