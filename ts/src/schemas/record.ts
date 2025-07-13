@@ -1,30 +1,51 @@
-import {
-  metadataIsOptional,
-  Schema,
-  ObjectSpec,
-  InferObjectType,
-} from './core.js';
-import { Json, parseJson, stringifyJson } from './json.js';
+import { Schema, schemaSymbol } from '../core.js';
+import { Json, parseJson, stringifyJson } from '../json.js';
+import { Simplify } from './choice.js';
+import { OptionalSchema } from './optional.js';
 
-export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
-  implements Schema<InferObjectType<S>, M>
+export type RecordSpec = {
+  [property: string]: Schema<any>;
+};
+
+export type InferRecordType<S extends RecordSpec> = Simplify<
+  {
+    [K in keyof S as S[K] extends OptionalSchema<any>
+      ? K
+      : never]?: S[K] extends OptionalSchema<infer U>
+      ? U['Type'] | undefined
+      : never;
+  } & {
+    [K in keyof S as S[K] extends OptionalSchema<any>
+      ? never
+      : K]: S[K] extends Schema<infer T> ? T : never;
+  }
+>;
+
+export class RecordSchema<S extends RecordSpec>
+  implements Schema<InferRecordType<S>>
 {
-  readonly schema = undefined!;
-  readonly Type = undefined!;
+  readonly [schemaSymbol] = undefined!;
+  readonly Type: InferRecordType<S> = undefined!;
 
-  constructor(readonly spec: S, readonly Metadata: M) {}
+  private constructor(readonly spec: S) {}
 
-  serialize(input: InferObjectType<S>): Json | Error {
-    if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-      return Error('non-object input');
+  static create<S extends RecordSpec>(spec: S): RecordSchema<S> | Error {
+    for (const key in spec) {
+      if (key.startsWith('$')) {
+        return Error('reserved property');
+      }
     }
 
+    return new RecordSchema(spec);
+  }
+
+  serialize(input: InferRecordType<S>): Json | Error {
     let out: { [key: string]: Json } | undefined;
 
     for (const key in this.spec) {
       const spec = this.spec[key];
       const hasProperty = key in input;
-      const isOptional = metadataIsOptional(spec.Metadata);
+      const isOptional = spec instanceof OptionalSchema;
 
       if (!hasProperty && !isOptional) {
         return Error('missing required property');
@@ -54,7 +75,7 @@ export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
     return out ?? (input as Json);
   }
 
-  stringify(value: InferObjectType<S>): string | TypeError | Error {
+  stringify(value: InferRecordType<S>): string | TypeError | Error {
     const serialized = this.serialize(value);
 
     if (serialized instanceof Error) {
@@ -64,7 +85,7 @@ export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
     return stringifyJson(serialized);
   }
 
-  parse(input: string): InferObjectType<S> | SyntaxError | Error {
+  parse(input: string): InferRecordType<S> | SyntaxError | Error {
     const json = parseJson(input);
 
     if (json instanceof Error) {
@@ -74,7 +95,7 @@ export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
     return this.deserialize(json);
   }
 
-  deserialize(input: Json): InferObjectType<S> | Error {
+  deserialize(input: Json): InferRecordType<S> | Error {
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
       return new Error('non-object json');
     }
@@ -84,7 +105,7 @@ export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
     for (const key in this.spec) {
       const spec = this.spec[key];
       const hasProperty = key in input;
-      const isOptional = metadataIsOptional(spec.Metadata);
+      const isOptional = spec instanceof OptionalSchema;
 
       if (!hasProperty && !isOptional) {
         return Error('missing required property');
@@ -111,6 +132,23 @@ export class ObjectSchema<S extends ObjectSpec, M extends {} = {}>
       }
     }
 
-    return (out ?? (input as InferObjectType<S>)) as InferObjectType<S>;
+    return (out ?? (input as InferRecordType<S>)) as InferRecordType<S>;
+  }
+
+  serializeSchema(): Json | Error {
+    const schema: Json = {};
+
+    for (const key in this.spec) {
+      const spec = this.spec[key];
+      const serializedSchema = spec.serializeSchema();
+
+      if (serializedSchema instanceof Error) {
+        return serializedSchema;
+      }
+
+      schema[key] = serializedSchema;
+    }
+
+    return schema;
   }
 }

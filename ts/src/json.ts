@@ -1,4 +1,4 @@
-import { Schema } from './core.js';
+import { Schema, schemaSymbol } from './core.js';
 
 export type Json =
   | null
@@ -9,7 +9,7 @@ export type Json =
   | { [key: string]: Json };
 
 export class JsonSchema implements Schema<Json, {}> {
-  readonly schema = undefined!;
+  readonly [schemaSymbol] = undefined!;
   readonly Type = undefined!;
   readonly Metadata = {};
 
@@ -27,6 +27,10 @@ export class JsonSchema implements Schema<Json, {}> {
 
   deserialize(input: Json): Json | Error {
     return input;
+  }
+
+  serializeSchema(): Json | Error {
+    return 'json';
   }
 }
 
