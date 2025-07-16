@@ -11,13 +11,13 @@ export type InferRecordType<S extends RecordSpec> = Simplify<
   {
     [K in keyof S as S[K] extends OptionSchema<any>
       ? K
-      : never]?: S[K] extends OptionSchema<infer U>
-      ? U['Type'] | undefined
+      : never]?: S[K] extends OptionSchema<any>
+      ? S[K]['Type'] | undefined
       : never;
   } & {
     [K in keyof S as S[K] extends OptionSchema<any>
       ? never
-      : K]: S[K] extends Schema<infer T> ? T : never;
+      : K]: S[K] extends Schema<any> ? S[K]['Type'] : never;
   }
 >;
 

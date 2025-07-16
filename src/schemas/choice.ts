@@ -8,7 +8,7 @@ export type ChoiceSpec = {
 export type InferChoiceType<S extends ChoiceSpec> = Simplify<
   {
     [K in keyof S]: {
-      [P in K]: S[K] extends Schema<infer T> ? T : null;
+      [P in K]: S[K] extends Schema<any> ? S[K]['Type'] : null;
     };
   }[keyof S]
 >;

@@ -1,9 +1,12 @@
 import { Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
 
+const optionSymbol = Symbol('option');
+
 export class OptionSchema<S extends Schema<any>>
   implements Schema<S['Type'] | undefined>
 {
+  readonly [optionSymbol] = undefined!;
   readonly [schemaSymbol] = undefined!;
   readonly Type: S['Type'] | undefined = undefined!;
 
