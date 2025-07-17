@@ -15,6 +15,10 @@ import { TimestampSchema } from './schemas/timestamp.js';
 import { TypeSchema } from './schemas/type.js';
 import { unwrap } from './util.js';
 
+export function rec<S extends Schema<any>>(callback: () => S): S {
+  return callback();
+}
+
 export function type<S extends Schema<any>>(
   name: string | string[],
   schema: S,
