@@ -1,66 +1,25 @@
-import { Schema, schemaSymbol } from '../core.js';
+import { Context, Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
-import { Simplify } from './choice.js';
-import { OptionSchema } from './option.js';
+import { SchemaError } from '../schema-error.js';
 
-export type RecordSpec = {
-  [property: string]: Schema<any>;
-};
-
-export type InferRecordType<S extends RecordSpec> = Simplify<
-  {
-    [K in keyof S as S[K] extends OptionSchema<any>
-      ? K
-      : never]?: S[K] extends OptionSchema<any>
-      ? S[K]['Type'] | undefined
-      : never;
-  } & {
-    [K in keyof S as S[K] extends OptionSchema<any>
-      ? never
-      : K]: S[K] extends Schema<any> ? S[K]['Type'] : never;
-  }
->;
-
-export class RecordSchema<S extends RecordSpec>
-  implements Schema<InferRecordType<S>>
+export class RecordSchema<S extends Schema<any>>
+  implements Schema<Record<string, S['Type']>>
 {
   readonly [schemaSymbol] = undefined!;
-  readonly Type: InferRecordType<S> = undefined!;
+  readonly Type: Record<string, S['Type']> = undefined!;
 
-  private constructor(readonly spec: S) {}
+  constructor(readonly spec: S) {}
 
-  static create<S extends RecordSpec>(spec: S): RecordSchema<S> | Error {
-    for (const key in spec) {
-      if (key.startsWith('$')) {
-        return Error('reserved property');
-      }
-    }
-
-    return new RecordSchema(spec);
-  }
-
-  serialize(input: InferRecordType<S>): Json | Error {
+  serialize(
+    input: Record<string, S['Type']>,
+    ctx: Context,
+  ): Json | SchemaError {
     let out: { [key: string]: Json } | undefined;
-
-    for (const key in this.spec) {
-      const spec = this.spec[key];
-      const hasProperty = key in input;
-      const isOptional = spec instanceof OptionSchema;
-
-      if (!hasProperty && !isOptional) {
-        return Error('missing required property');
-      }
-    }
 
     for (const key in input) {
       const value = input[key];
-      const spec = this.spec[key];
-
-      if (spec === undefined) {
-        return Error('unknown property');
-      }
-
-      const serializedValue = spec.serialize(value);
+      const nextCtx = ctx.appendPath(key);
+      const serializedValue = this.spec.serialize(value, nextCtx);
 
       if (serializedValue instanceof Error) {
         return serializedValue;
@@ -75,54 +34,45 @@ export class RecordSchema<S extends RecordSpec>
     return out ?? (input as Json);
   }
 
-  stringify(value: InferRecordType<S>): string | TypeError | Error {
-    const serialized = this.serialize(value);
+  stringify(
+    value: Record<string, S['Type']>,
+    ctx: Context,
+  ): string | SchemaError {
+    const serialized = this.serialize(value, ctx);
 
     if (serialized instanceof Error) {
       return serialized;
     }
 
-    return stringifyJson(serialized);
+    return stringifyJson(serialized, ctx);
   }
 
-  parse(input: string): InferRecordType<S> | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): Record<string, S['Type']> | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: Json): InferRecordType<S> | Error {
+  deserialize(
+    input: Json,
+    ctx: Context,
+  ): Record<string, S['Type']> | SchemaError {
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-      return new Error('non-object json');
+      return new SchemaError('non-object json', ctx);
     }
 
     let out: { [key: string]: unknown } | undefined;
 
-    for (const key in this.spec) {
-      const spec = this.spec[key];
-      const hasProperty = key in input;
-      const isOptional = spec instanceof OptionSchema;
-
-      if (!hasProperty && !isOptional) {
-        return Error('missing required property');
-      }
-    }
-
     for (const key in input) {
       const value = input[key];
-      const spec = this.spec[key];
+      const nextCtx = ctx.appendPath(key);
+      const deserializedValue = this.spec.deserialize(value, nextCtx);
 
-      if (spec === undefined) {
-        return Error('unexpected property');
-      }
-
-      const deserializedValue = spec.deserialize(value);
-
-      if (deserializedValue instanceof Error) {
+      if (deserializedValue instanceof SchemaError) {
         return deserializedValue;
       }
 
@@ -132,22 +82,20 @@ export class RecordSchema<S extends RecordSpec>
       }
     }
 
-    return (out ?? (input as InferRecordType<S>)) as InferRecordType<S>;
+    return out ?? input;
   }
 
-  serializeSchema(): Json | Error {
-    const schema: Json = {};
+  serializeSchema(): Json | SchemaError {
+    const serializedSchema = this.spec.serializeSchema();
 
-    for (const key in this.spec) {
-      const spec = this.spec[key];
-      const serializedSchema = spec.serializeSchema();
-
-      if (serializedSchema instanceof Error) {
-        return serializedSchema;
-      }
-
-      schema[key] = serializedSchema;
+    if (serializedSchema instanceof SchemaError) {
+      return serializedSchema;
     }
+
+    const schema: Json = {
+      $type: '$record',
+      param: serializedSchema,
+    };
 
     return schema;
   }

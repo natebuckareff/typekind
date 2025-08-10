@@ -1,41 +1,42 @@
-import { Schema, schemaSymbol } from '../core.js';
+import { Context, Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
+import { SchemaError } from '../schema-error.js';
 
 export class TimestampSchema implements Schema<Date> {
   readonly [schemaSymbol] = undefined!;
   readonly Type: Date = undefined!;
 
-  serialize(input: Date): Json | Error {
+  serialize(input: Date, ctx: Context): Json | SchemaError {
     return input.getTime();
   }
 
-  stringify(input: Date): string | TypeError | Error {
-    return stringifyJson(input.getTime());
+  stringify(input: Date, ctx: Context): string | SchemaError {
+    return stringifyJson(input.getTime(), ctx);
   }
 
-  parse(input: string): Date | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): Date | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: unknown): Date | Error {
+  deserialize(input: unknown, ctx: Context): Date | SchemaError {
     if (typeof input !== 'number') {
-      return Error('invalid type');
+      return new SchemaError('invalid type', ctx);
     }
 
     if (!Number.isSafeInteger(input)) {
-      return Error('invalid timestamp');
+      return new SchemaError('invalid timestamp', ctx);
     }
 
     return new Date(input);
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     return 'timestamp';
   }
 }

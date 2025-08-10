@@ -1,10 +1,12 @@
+import { SchemaError } from './schema-error.js';
+
 export type UnionToIntersection<U> = (
   U extends any ? (x: U) => void : never
 ) extends (x: infer I) => void
   ? I
   : never;
 
-export const unwrap = <T>(input: T | Error): T => {
+export const unwrap = <T>(input: T | SchemaError): T => {
   if (input instanceof Error) {
     throw input;
   }

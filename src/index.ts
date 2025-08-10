@@ -7,6 +7,7 @@ export * from './json.js';
 export * from './schemas/array.js';
 export * from './schemas/bool.js';
 export * from './schemas/choice.js';
+export * from './schemas/object.js';
 export * from './schemas/option.js';
 export * from './schemas/record.js';
 export * from './schemas/string.js';

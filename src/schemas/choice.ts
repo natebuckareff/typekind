@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../core.js';
+import { Context, Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
+import { SchemaError } from '../schema-error.js';
 
 export type ChoiceSpec = {
   [property: string]: Schema<any> | null;
@@ -25,39 +26,45 @@ export class ChoiceSchema<S extends ChoiceSpec>
 
   private constructor(readonly spec: S) {}
 
-  static create<S extends ChoiceSpec>(spec: S): ChoiceSchema<S> | Error {
+  static create<S extends ChoiceSpec>(
+    spec: S,
+    ctx?: Context,
+  ): ChoiceSchema<S> | SchemaError {
+    ctx ??= new Context();
     let atLeastOneVariant = false;
     for (const key in spec) {
       if (key.startsWith('$')) {
-        return Error('reserved property');
+        const nextCtx = ctx.appendPath(key);
+        return new SchemaError('reserved property', nextCtx);
       }
       atLeastOneVariant = true;
     }
 
     if (!atLeastOneVariant) {
-      return Error('empty choice spec');
+      return new SchemaError('empty choice spec', ctx);
     }
 
     return new ChoiceSchema(spec);
   }
 
-  serialize(input: InferChoiceType<S>): Json | Error {
-    let error: Error | undefined;
+  serialize(input: InferChoiceType<S>, ctx: Context): Json | SchemaError {
+    let error: SchemaError | undefined;
 
     for (const key in this.spec) {
       const spec = this.spec[key];
+      const nextCtx = ctx.appendPath(key);
 
       if (spec === null) {
         if (input !== undefined) {
-          error = Error('expected unit value');
+          error = new SchemaError('expected unit value', nextCtx);
           continue;
         }
 
         return null;
       } else {
-        const serializedValue = spec.serialize(input);
+        const serializedValue = spec.serialize(input, nextCtx);
 
-        if (serializedValue instanceof Error) {
+        if (serializedValue instanceof SchemaError) {
           error = serializedValue;
           continue;
         }
@@ -70,46 +77,47 @@ export class ChoiceSchema<S extends ChoiceSpec>
       throw Error('empty choice spec');
     }
 
-    return Error('no variant matched');
+    return new SchemaError('no variant matched', ctx, error);
   }
 
-  stringify(input: InferChoiceType<S>): string | TypeError | Error {
-    const serialized = this.serialize(input);
+  stringify(input: InferChoiceType<S>, ctx: Context): string | SchemaError {
+    const serialized = this.serialize(input, ctx);
 
     if (serialized instanceof Error) {
       return serialized;
     }
 
-    return stringifyJson(serialized);
+    return stringifyJson(serialized, ctx);
   }
 
-  parse(input: string): InferChoiceType<S> | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): InferChoiceType<S> | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: unknown): InferChoiceType<S> | Error {
-    let error: Error | undefined;
+  deserialize(input: unknown, ctx: Context): InferChoiceType<S> | SchemaError {
+    let error: SchemaError | undefined;
 
     for (const key in this.spec) {
       const spec = this.spec[key];
+      const nextCtx = ctx.appendPath(key);
 
       if (spec === null) {
         if (input !== undefined) {
-          error = Error('expected unit value');
+          error = new SchemaError('expected unit value', nextCtx);
           continue;
         }
 
         return { [key]: null } as InferChoiceType<S>;
       } else {
-        const deserializedValue = spec.deserialize(input);
+        const deserializedValue = spec.deserialize(input, nextCtx);
 
-        if (deserializedValue instanceof Error) {
+        if (deserializedValue instanceof SchemaError) {
           error = deserializedValue;
           continue;
         }
@@ -122,10 +130,10 @@ export class ChoiceSchema<S extends ChoiceSpec>
       throw Error('empty choice spec');
     }
 
-    return Error('no variant matched');
+    return new SchemaError('no variant matched', ctx, error);
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     const schema: Json = {
       $type: '$choice',
     };
@@ -138,7 +146,7 @@ export class ChoiceSchema<S extends ChoiceSpec>
       } else {
         const serializedSchema = spec.serializeSchema();
 
-        if (serializedSchema instanceof Error) {
+        if (serializedSchema instanceof SchemaError) {
           return serializedSchema;
         }
 

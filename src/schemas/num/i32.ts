@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../../core.js';
+import { Context, Schema, schemaSymbol } from '../../core.js';
 import { Json, parseJson, stringifyJson } from '../../json.js';
+import { SchemaError } from '../../schema-error.js';
 
 export type I32 = number & { readonly i32: unique symbol };
 
@@ -15,37 +16,37 @@ export class I32Schema implements Schema<I32> {
   readonly [schemaSymbol] = undefined!;
   readonly Type: I32 = undefined!;
 
-  serialize(input: I32): Json | Error {
+  serialize(input: I32, ctx: Context): Json | SchemaError {
     return input;
   }
 
-  stringify(input: I32): string | TypeError | Error {
-    return stringifyJson(input);
+  stringify(input: I32, ctx: Context): string | SchemaError {
+    return stringifyJson(input, ctx);
   }
 
-  parse(input: string): I32 | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): I32 | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: unknown): I32 | Error {
+  deserialize(input: unknown, ctx: Context): I32 | SchemaError {
     if (typeof input !== 'number') {
-      return Error('invalid type');
+      return new SchemaError('invalid type', ctx);
     }
 
     if (!isI32(input)) {
-      return Error('invalid i32');
+      return new SchemaError('invalid i32', ctx);
     }
 
     return input;
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     return 'i32';
   }
 }

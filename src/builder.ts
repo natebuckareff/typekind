@@ -9,11 +9,12 @@ import { I64Schema } from './schemas/num/i64.js';
 import { U32Schema } from './schemas/num/u32.js';
 import { U64Schema } from './schemas/num/u64.js';
 import { OptionSchema } from './schemas/option.js';
-import { RecordSchema, RecordSpec } from './schemas/record.js';
+import { ObjectSchema, ObjectSpec } from './schemas/object.js';
 import { StringSchema } from './schemas/string.js';
 import { TimestampSchema } from './schemas/timestamp.js';
 import { TypeSchema } from './schemas/type.js';
 import { unwrap } from './util.js';
+import { RecordSchema } from './schemas/record.js';
 
 export function rec<S extends Schema<any>>(callback: () => S): S {
   return callback();
@@ -26,27 +27,33 @@ export function type<S extends Schema<any>>(
   return unwrap(TypeSchema.create(name, schema));
 }
 
-export function record<S extends RecordSpec>(
+export function object<S extends ObjectSpec>(
   name: string | string[],
   spec: S,
-): TypeSchema<RecordSchema<S>>;
+): TypeSchema<ObjectSchema<S>>;
 
-export function record<S extends RecordSpec>(spec: S): RecordSchema<S>;
+export function object<S extends ObjectSpec>(spec: S): ObjectSchema<S>;
 
-export function record(
-  nameOrSpec: string | string[] | RecordSpec,
-  spec?: RecordSpec,
-): TypeSchema<RecordSchema<RecordSpec>> | RecordSchema<RecordSpec> {
+export function object(
+  nameOrSpec: string | string[] | ObjectSpec,
+  spec?: ObjectSpec,
+): TypeSchema<ObjectSchema<ObjectSpec>> | ObjectSchema<ObjectSpec> {
   if (typeof nameOrSpec === 'string' || Array.isArray(nameOrSpec)) {
     if (!spec) {
       throw Error('spec is required');
     }
-    const schema = unwrap(RecordSchema.create(spec));
+    const schema = unwrap(ObjectSchema.create(spec));
     return unwrap(TypeSchema.create(nameOrSpec, schema));
   } else {
-    return unwrap(RecordSchema.create(nameOrSpec));
+    return unwrap(ObjectSchema.create(nameOrSpec));
   }
 }
+
+export const record = <const S extends Schema<any>>(
+  spec: S,
+): RecordSchema<S> => {
+  return unwrap(new RecordSchema(spec));
+};
 
 export function choice<S extends ChoiceSpec>(
   name: string | string[],
