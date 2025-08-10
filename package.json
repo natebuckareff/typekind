@@ -1,6 +1,6 @@
 {
   "name": "typekind",
-  "version": "0.0.4-beta.0",
+  "version": "0.0.4-beta.1",
   "author": "Nate Buckareff",
   "description": "Simple types-as-schemas.",
   "license": "MIT",
@@ -23,7 +23,6 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsx watch src/playground.ts",
     "typeck": "tsc --noEmit",
     "build": "pnpm run clean && tsc -p .",
     "clean": "rm -rf dist",
