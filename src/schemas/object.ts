@@ -44,7 +44,11 @@ export class ObjectSchema<S extends ObjectSpec>
     return new ObjectSchema(spec);
   }
 
-  serialize(input: InferObjectType<S>, ctx: Context): Json | SchemaError {
+  serialize(
+    input: InferObjectType<S>,
+    ctx: Context,
+    skipKey?: string,
+  ): Json | SchemaError {
     let out: { [key: string]: Json } | undefined;
 
     for (const key in this.spec) {
@@ -59,6 +63,10 @@ export class ObjectSchema<S extends ObjectSpec>
     }
 
     for (const key in input) {
+      if (key === skipKey) {
+        continue;
+      }
+
       const value = input[key];
       const spec = this.spec[key];
       const nextCtx = ctx.appendPath(key);
@@ -102,7 +110,11 @@ export class ObjectSchema<S extends ObjectSpec>
     return this.deserialize(json, ctx);
   }
 
-  deserialize(input: Json, ctx: Context): InferObjectType<S> | SchemaError {
+  deserialize(
+    input: Json,
+    ctx: Context,
+    skipKey?: string,
+  ): InferObjectType<S> | SchemaError {
     if (typeof input !== 'object' || input === null || Array.isArray(input)) {
       return new SchemaError('non-object json', ctx);
     }
@@ -121,12 +133,16 @@ export class ObjectSchema<S extends ObjectSpec>
     }
 
     for (const key in input) {
+      if (key === skipKey) {
+        continue;
+      }
+
       const value = input[key];
       const spec = this.spec[key];
       const nextCtx = ctx.appendPath(key);
 
       if (spec === undefined) {
-        return new SchemaError('unexpected property', nextCtx);
+        return new SchemaError(`unexpected property "${key}"`, nextCtx);
       }
 
       const deserializedValue = spec.deserialize(value, nextCtx);
@@ -149,6 +165,11 @@ export class ObjectSchema<S extends ObjectSpec>
 
     for (const key in this.spec) {
       const spec = this.spec[key];
+
+      if (spec === undefined) {
+        return new SchemaError('unknown property');
+      }
+
       const serializedSchema = spec.serializeSchema();
 
       if (serializedSchema instanceof SchemaError) {
