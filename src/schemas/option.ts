@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../core.js';
+import { Context, Schema, schemaSymbol } from '../core.js';
 import { Json, parseJson, stringifyJson } from '../json.js';
+import { SchemaError } from '../schema-error.js';
 
 const optionSymbol = Symbol('option');
 
@@ -12,12 +13,13 @@ export class OptionSchema<S extends Schema<any>>
 
   constructor(readonly spec: S) {}
 
-  serialize(input: S['Type'] | undefined): Json | Error {
+  serialize(input: S['Type'] | undefined, ctx: Context): Json | SchemaError {
     if (input === undefined) {
       return null;
     }
 
-    const serializedValue = this.spec.serialize(input);
+    const nextCtx = ctx.appendPath(0);
+    const serializedValue = this.spec.serialize(input, nextCtx);
 
     if (serializedValue instanceof Error) {
       return serializedValue;
@@ -26,32 +28,32 @@ export class OptionSchema<S extends Schema<any>>
     return serializedValue;
   }
 
-  stringify(value: S['Type'] | undefined): string | TypeError | Error {
-    const serialized = this.serialize(value);
+  stringify(value: S['Type'] | undefined, ctx: Context): string | SchemaError {
+    const serialized = this.serialize(value, ctx);
 
     if (serialized instanceof Error) {
       return serialized;
     }
 
-    return stringifyJson(serialized);
+    return stringifyJson(serialized, ctx);
   }
 
-  parse(input: string): S['Type'] | undefined | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): S['Type'] | undefined | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: Json): S['Type'] | undefined | Error {
+  deserialize(input: Json, ctx: Context): S['Type'] | undefined | SchemaError {
     if (input === null) {
       return undefined;
     }
 
-    const deserializedValue = this.spec.deserialize(input);
+    const deserializedValue = this.spec.deserialize(input, ctx);
 
     if (deserializedValue instanceof Error) {
       return deserializedValue;
@@ -60,10 +62,10 @@ export class OptionSchema<S extends Schema<any>>
     return deserializedValue;
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     const serializedSchema = this.spec.serializeSchema();
 
-    if (serializedSchema instanceof Error) {
+    if (serializedSchema instanceof SchemaError) {
       return serializedSchema;
     }
 

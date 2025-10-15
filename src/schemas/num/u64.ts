@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../../core.js';
+import { Context, Schema, schemaSymbol } from '../../core.js';
 import { Json, parseJson, stringifyJson } from '../../json.js';
+import { SchemaError } from '../../schema-error.js';
 
 const u64Regex = /^[0-9]+$/;
 
@@ -21,43 +22,43 @@ export class U64Schema implements Schema<U64> {
   readonly [schemaSymbol] = undefined!;
   readonly Type: U64 = undefined!;
 
-  serialize(input: U64): Json | Error {
+  serialize(input: U64, ctx: Context): Json | SchemaError {
     return input.toString();
   }
 
-  stringify(input: U64): string | TypeError | Error {
-    return stringifyJson(input.toString());
+  stringify(input: U64, ctx: Context): string | SchemaError {
+    return stringifyJson(input.toString(), ctx);
   }
 
-  parse(input: string): U64 | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): U64 | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: unknown): U64 | Error {
+  deserialize(input: unknown, ctx: Context): U64 | SchemaError {
     if (typeof input !== 'string') {
-      return Error('invalid type');
+      return new SchemaError('invalid type', ctx);
     }
 
     if (!u64Regex.test(input)) {
-      return Error('not a number');
+      return new SchemaError('not a number', ctx);
     }
 
     const value = BigInt(input);
 
     if (!isU64(value)) {
-      return Error('invalid u64');
+      return new SchemaError('invalid u64', ctx);
     }
 
     return value;
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     return 'u64';
   }
 }

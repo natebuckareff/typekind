@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../core.js';
+import { Context, Schema, schemaSymbol } from '../core.js';
 import { Json } from '../json.js';
+import { SchemaError } from '../schema-error.js';
 
 const oneOrMore = <T>(value: T | T[]): T[] => {
   if (Array.isArray(value)) {
@@ -27,23 +28,23 @@ export class TypeSchema<S extends Schema<any>> implements Schema<S['Type']> {
     return new TypeSchema(pathOrName, spec);
   }
 
-  serialize(input: S['Type']): Json | Error {
-    return this.spec.serialize(input);
+  serialize(input: S['Type'], ctx: Context): Json | SchemaError {
+    return this.spec.serialize(input, ctx);
   }
 
-  stringify(input: S['Type']): string | TypeError | Error {
-    return this.spec.stringify(input);
+  stringify(input: S['Type'], ctx: Context): string | SchemaError {
+    return this.spec.stringify(input, ctx);
   }
 
-  parse(input: string): S['Type'] | SyntaxError | Error {
-    return this.spec.parse(input);
+  parse(input: string, ctx: Context): S['Type'] | SchemaError {
+    return this.spec.parse(input, ctx);
   }
 
-  deserialize(input: unknown): S['Type'] | Error {
-    return this.spec.deserialize(input);
+  deserialize(input: unknown, ctx: Context): S['Type'] | SchemaError {
+    return this.spec.deserialize(input, ctx);
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     const bodySchema = this.spec.serializeSchema();
 
     if (bodySchema instanceof Error) {

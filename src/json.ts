@@ -1,4 +1,5 @@
-import { Schema, schemaSymbol } from './core.js';
+import { Context, Schema, schemaSymbol } from './core.js';
+import { SchemaError } from './schema-error.js';
 
 export type Json =
   | null
@@ -12,45 +13,45 @@ export class JsonSchema implements Schema<Json> {
   readonly [schemaSymbol] = undefined!;
   readonly Type: Json = undefined!;
 
-  serialize(input: Json): Json | Error {
+  serialize(input: Json): Json | SchemaError {
     return input;
   }
 
-  stringify(input: Json): string | TypeError | Error {
-    return stringifyJson(input);
+  stringify(input: Json, ctx: Context): string | SchemaError {
+    return stringifyJson(input, ctx);
   }
 
-  parse(input: string): Json | SyntaxError | Error {
-    return parseJson(input);
+  parse(input: string, ctx: Context): Json | SchemaError {
+    return parseJson(input, ctx);
   }
 
-  deserialize(input: Json): Json | Error {
+  deserialize(input: Json): Json | SchemaError {
     return input;
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     return 'json';
   }
 }
 
-export function stringifyJson(json: Json): string | TypeError {
+export function stringifyJson(json: Json, ctx: Context): string | SchemaError {
   try {
     return JSON.stringify(json);
   } catch (error) {
     if (error instanceof TypeError) {
-      return error;
+      return new SchemaError('json stringify error', ctx, error);
     } else {
       throw error;
     }
   }
 }
 
-export function parseJson(input: string): Json | SyntaxError {
+export function parseJson(input: string, ctx: Context): Json | SchemaError {
   try {
     return JSON.parse(input);
   } catch (error) {
     if (error instanceof SyntaxError) {
-      return error;
+      return new SchemaError('json parsing error', ctx, error);
     } else {
       throw error;
     }

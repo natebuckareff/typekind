@@ -1,5 +1,6 @@
-import { Schema, schemaSymbol } from '../../core.js';
+import { Context, Schema, schemaSymbol } from '../../core.js';
 import { Json, parseJson, stringifyJson } from '../../json.js';
+import { SchemaError } from '../../schema-error.js';
 
 const i64Regex = /^(-+)?[0-9]+$/;
 
@@ -21,43 +22,43 @@ export class I64Schema implements Schema<I64> {
   readonly [schemaSymbol] = undefined!;
   readonly Type: I64 = undefined!;
 
-  serialize(input: I64): Json | Error {
+  serialize(input: I64, ctx: Context): Json | SchemaError {
     return input.toString();
   }
 
-  stringify(input: I64): string | TypeError | Error {
-    return stringifyJson(input.toString());
+  stringify(input: I64, ctx: Context): string | SchemaError {
+    return stringifyJson(input.toString(), ctx);
   }
 
-  parse(input: string): I64 | SyntaxError | Error {
-    const json = parseJson(input);
+  parse(input: string, ctx: Context): I64 | SchemaError {
+    const json = parseJson(input, ctx);
 
     if (json instanceof Error) {
       return json;
     }
 
-    return this.deserialize(json);
+    return this.deserialize(json, ctx);
   }
 
-  deserialize(input: unknown): I64 | Error {
+  deserialize(input: unknown, ctx: Context): I64 | SchemaError {
     if (typeof input !== 'string') {
-      return Error('invalid type');
+      return new SchemaError('invalid type', ctx);
     }
 
     if (!i64Regex.test(input)) {
-      return Error('not a number');
+      return new SchemaError('not a number', ctx);
     }
 
     const value = BigInt(input);
 
     if (!isI64(value)) {
-      return Error('invalid i64');
+      return new SchemaError('invalid i64', ctx);
     }
 
     return value;
   }
 
-  serializeSchema(): Json | Error {
+  serializeSchema(): Json | SchemaError {
     return 'i64';
   }
 }
