@@ -1,0 +1,77 @@
+import { CodecError } from '../codec-error.js';
+import { AnyCodec, Codec } from '../codec.js';
+import { Context } from '../context.js';
+import { isObject, Json } from '../json.js';
+import { AnySchema, Schema } from '../schema.js';
+
+export class RecordSchema<
+  Key extends AnySchema,
+  Value extends AnySchema,
+> extends Schema<'record', Record<Key['Type'], Value['Type']>> {
+  public readonly key: Key;
+  public readonly value: Value;
+
+  constructor(key: Key, value: Value) {
+    super('record');
+    this.key = key;
+    this.value = value;
+  }
+}
+
+export class RecordCodec<
+  Key extends AnyCodec,
+  Value extends AnyCodec,
+> extends Codec<
+  Record<Key['Type'], Value['Type']>,
+  RecordSchema<Key['Schema'], Value['Schema']>
+> {
+  constructor(
+    public readonly key: Key,
+    public readonly value: Value,
+  ) {
+    super();
+  }
+
+  schema(): RecordSchema<Key['Schema'], Value['Schema']> {
+    return new RecordSchema(this.key.schema(), this.value.schema());
+  }
+
+  serialize(value: this['Type'], ctx?: Context): Json {
+    ctx ??= new Context();
+    let out: any | undefined;
+    for (const key in value) {
+      const field = value[key];
+      const c = ctx.clone(key);
+      const serializedKey = this.key.serialize(key, c);
+      const serializedField = this.value.serialize(field, c);
+      if (!out && (field !== serializedField || key !== serializedKey)) {
+        out = { ...(value as object) };
+      }
+      if (out) {
+        out[serializedKey as any] = serializedField;
+      }
+    }
+    return out ?? value;
+  }
+
+  deserialize(json: Json, ctx?: Context): this['Type'] {
+    if (!isObject(json)) {
+      CodecError.throw(this, json, ctx);
+    }
+    ctx ??= new Context();
+    let out: any | undefined;
+    for (const key in json) {
+      const field = json[key]!;
+      const c = ctx.clone(key);
+      const deserializedKey = this.key.deserialize(key, c);
+      const deserializedField = this.value.deserialize(field, c);
+      if (!out && (field !== deserializedField || key !== deserializedKey)) {
+        out = { ...json };
+      }
+      if (out) {
+        out[deserializedKey] = deserializedField;
+      }
+    }
+    return out ?? json;
+  }
+}
