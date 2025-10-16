@@ -20,7 +20,7 @@ export type InferChoiceType<Spec extends ChoiceSpec> = Simplify<
   }[keyof Spec]
 >;
 
-export class ChoiceSchema<Type> extends Schema<'choice', Type> {
+export class ChoiceSchema extends Schema<'choice'> {
   constructor(public readonly variants: Record<string, AnySchema | null>) {
     super('choice');
   }
@@ -28,18 +28,18 @@ export class ChoiceSchema<Type> extends Schema<'choice', Type> {
 
 export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
   InferChoiceType<Spec>,
-  ChoiceSchema<InferChoiceType<Spec>>
+  ChoiceSchema
 > {
   constructor(public readonly spec: Spec) {
     super();
   }
 
-  schema(): ChoiceSchema<InferChoiceType<Spec>> {
+  schema(): ChoiceSchema {
     const schema: Record<string, AnySchema | null> = {};
     for (const [key, codec] of Object.entries(this.spec)) {
       schema[key] = codec === null ? null : codec.schema();
     }
-    return new ChoiceSchema(schema as Record<keyof Spec, AnySchema | null>);
+    return new ChoiceSchema(schema);
   }
 
   serialize(input: InferChoiceType<Spec>, ctx?: Context): Json {

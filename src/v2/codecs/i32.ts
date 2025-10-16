@@ -13,7 +13,7 @@ export const i32 = (value: number): I32 => (value | 0) as I32;
 export const MIN_I32 = -2_147_483_648;
 export const MAX_I32 = 2_147_483_647;
 
-export class I32Schema extends Schema<'i32', I32> {}
+export class I32Schema extends Schema<'i32'> {}
 
 export class I32Codec extends Codec<I32, I32Schema> {
   schema(): I32Schema {

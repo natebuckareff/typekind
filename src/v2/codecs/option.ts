@@ -3,25 +3,22 @@ import { Context } from '../context.js';
 import { Json } from '../json.js';
 import { AnySchema, Schema } from '../schema.js';
 
-export class OptionSchema<S extends AnySchema> extends Schema<
-  'option',
-  S['Type'] | undefined
-> {
-  constructor(public readonly of: S) {
+export class OptionSchema extends Schema<'option'> {
+  constructor(public readonly of: AnySchema) {
     super('option');
   }
 }
 
 export class OptionCodec<T extends AnyCodec> extends Codec<
   T['Type'] | undefined,
-  OptionSchema<T['Schema']>
+  OptionSchema
 > {
   constructor(public readonly codec: T) {
     super();
   }
 
-  schema(): OptionSchema<T['Schema']> {
-    return new OptionSchema<T['Schema']>(this.codec.schema());
+  schema(): OptionSchema {
+    return new OptionSchema(this.codec.schema());
   }
 
   serialize(value: T['Type'] | undefined, ctx?: Context): Json {

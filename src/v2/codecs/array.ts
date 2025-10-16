@@ -4,24 +4,21 @@ import { Context } from '../context.js';
 import { isArray, Json } from '../json.js';
 import { AnySchema, Schema } from '../schema.js';
 
-export class ArraySchema<S extends AnySchema> extends Schema<
-  'array',
-  S['Type'][]
-> {
-  constructor(public readonly elements: S) {
+export class ArraySchema extends Schema<'array'> {
+  constructor(public readonly elements: AnySchema) {
     super('array');
   }
 }
 
 export class ArrayCodec<T extends AnyCodec> extends Codec<
   T['Type'][],
-  ArraySchema<T['Schema']>
+  ArraySchema
 > {
   constructor(public readonly codec: T) {
     super();
   }
 
-  schema(): ArraySchema<T['Schema']> {
+  schema(): ArraySchema {
     return new ArraySchema(this.codec.schema());
   }
 

@@ -4,18 +4,16 @@ import { Context } from '../context.js';
 import { Json } from '../json.js';
 import { Schema } from '../schema.js';
 
-function createSchema<const Name extends string, Type>(
-  type: Name,
-): Schema<Name, Type> {
-  return { type } as Schema<Name, Type>;
+function createSchema<const Name extends string>(type: Name): Schema<Name> {
+  return { type } as Schema<Name>;
 }
 
 function createCodec<const Name extends string, Type>(
   name: Name,
   check: (value: unknown) => value is Type,
 ) {
-  return class PrimitiveCodec extends Codec<Type, Schema<Name, Type>> {
-    schema(): Schema<Name, Type> {
+  return class PrimitiveCodec extends Codec<Type, Schema<Name>> {
+    schema(): Schema<Name> {
       return createSchema(name);
     }
 

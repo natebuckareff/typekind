@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { isRegex, Json } from '../json.js';
 import { Schema } from '../schema.js';
 
-export class BigIntSchema extends Schema<'bigint', bigint> {}
+export class BigIntSchema extends Schema<'bigint'> {}
 
 export class BigIntCodec extends Codec<bigint, BigIntSchema> {
   schema(): BigIntSchema {

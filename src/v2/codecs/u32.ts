@@ -12,7 +12,7 @@ export type U32 = number & { readonly [u32Symbol]: true };
 export const u32 = (value: number): U32 => (value >>> 0) as U32;
 export const MAX_U32 = 4_294_967_295;
 
-export class U32Schema extends Schema<'u32', U32> {}
+export class U32Schema extends Schema<'u32'> {}
 
 export class U32Codec extends Codec<U32, U32Schema> {
   schema(): U32Schema {

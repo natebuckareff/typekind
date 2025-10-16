@@ -4,7 +4,7 @@ import { Context } from '../context.js';
 import { isNumber, Json } from '../json.js';
 import { Schema } from '../schema.js';
 
-export class DateSchema extends Schema<'date', Date> {}
+export class DateSchema extends Schema<'date'> {}
 
 export class DateCodec extends Codec<Date, DateSchema> {
   schema(): DateSchema {

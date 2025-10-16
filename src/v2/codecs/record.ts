@@ -4,27 +4,19 @@ import { Context } from '../context.js';
 import { isObject, Json } from '../json.js';
 import { AnySchema, Schema } from '../schema.js';
 
-export class RecordSchema<
-  Key extends AnySchema,
-  Value extends AnySchema,
-> extends Schema<'record', Record<Key['Type'], Value['Type']>> {
-  public readonly key: Key;
-  public readonly value: Value;
-
-  constructor(key: Key, value: Value) {
+export class RecordSchema extends Schema<'record'> {
+  constructor(
+    public readonly key: AnySchema,
+    public readonly value: AnySchema,
+  ) {
     super('record');
-    this.key = key;
-    this.value = value;
   }
 }
 
 export class RecordCodec<
   Key extends AnyCodec,
   Value extends AnyCodec,
-> extends Codec<
-  Record<Key['Type'], Value['Type']>,
-  RecordSchema<Key['Schema'], Value['Schema']>
-> {
+> extends Codec<Record<Key['Type'], Value['Type']>, RecordSchema> {
   constructor(
     public readonly key: Key,
     public readonly value: Value,
@@ -32,7 +24,7 @@ export class RecordCodec<
     super();
   }
 
-  schema(): RecordSchema<Key['Schema'], Value['Schema']> {
+  schema(): RecordSchema {
     return new RecordSchema(this.key.schema(), this.value.schema());
   }
 

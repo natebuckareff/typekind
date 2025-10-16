@@ -22,21 +22,21 @@ export type InferObjectType<Spec extends ObjectSpec> = Simplify<
   }
 >;
 
-export class ObjectSchema<Type> extends Schema<'object', Type> {
-  constructor(public readonly properties: { [K: string]: AnySchema }) {
+export class ObjectSchema extends Schema<'object'> {
+  constructor(public readonly properties: Record<string, AnySchema>) {
     super('object');
   }
 }
 
 export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
   InferObjectType<Spec>,
-  ObjectSchema<InferObjectType<Spec>>
+  ObjectSchema
 > {
   constructor(public readonly spec: Spec) {
     super();
   }
 
-  schema(): ObjectSchema<InferObjectType<Spec>> {
+  schema(): ObjectSchema {
     const schema: Record<string, AnySchema> = {};
     for (const [key, codec] of Object.entries(this.spec)) {
       schema[key] = codec.schema();
