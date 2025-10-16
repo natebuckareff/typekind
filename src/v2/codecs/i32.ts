@@ -10,8 +10,8 @@ declare const i32Symbol: unique symbol;
 export type I32 = number & { readonly [i32Symbol]: true };
 
 export const i32 = (value: number): I32 => (value | 0) as I32;
-export const MIN_I32 = -2_147_483_648;
-export const MAX_I32 = 2_147_483_647;
+export const MIN_I32 = i32(-2_147_483_648);
+export const MAX_I32 = i32(2_147_483_647);
 
 export class I32Schema extends Schema<'i32'> {}
 
@@ -31,6 +31,6 @@ export class I32Codec extends Codec<I32, I32Schema> {
     if (json < MIN_I32 || json > MAX_I32) {
       throw new CodecError(`number is out-of-range for i32`, ctx);
     }
-    return json as I32;
+    return i32(json);
   }
 }

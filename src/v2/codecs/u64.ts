@@ -1,0 +1,36 @@
+import { CodecError } from '../codec-error.js';
+import { Codec } from '../codec.js';
+import { Context } from '../context.js';
+import { isRegex, Json } from '../json.js';
+import { Schema } from '../schema.js';
+
+/** @internal */
+declare const u64Symbol: unique symbol;
+
+export type U64 = bigint & { readonly [u64Symbol]: true };
+
+export const u64 = (value: bigint): U64 => BigInt.asUintN(64, value) as U64;
+export const MAX_U64 = u64(18_446_744_073_709_551_615n);
+
+export class U64Schema extends Schema<'u64'> {}
+
+export class U64Codec extends Codec<U64, U64Schema> {
+  schema(): U64Schema {
+    return new U64Schema('u64');
+  }
+
+  serialize(value: U64, _?: Context): Json {
+    return value.toString();
+  }
+
+  deserialize(json: Json, ctx?: Context): U64 {
+    if (!isRegex(json, /^[0-9]+$/)) {
+      CodecError.throw(this, json, ctx);
+    }
+    const int = BigInt(json);
+    if (int < 0n || int > MAX_U64) {
+      throw new CodecError(`number is out-of-range for u32`, ctx);
+    }
+    return u64(int);
+  }
+}
