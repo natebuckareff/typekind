@@ -1,8 +1,8 @@
 {
   "name": "typekind",
-  "version": "0.0.4-beta.2",
+  "version": "0.0.4",
   "author": "Nate Buckareff",
-  "description": "Simple types-as-schemas.",
+  "description": "Strongly typed JSON serialization",
   "license": "MIT",
   "repository": {
     "type": "git",
