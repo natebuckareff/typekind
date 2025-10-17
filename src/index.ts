@@ -1,21 +1,21 @@
 export * as tk from './builder.js';
 
-export * from './core.js';
-export * from './infer.js';
+export * from './codec-error.js';
+export * from './codec.js';
+export * from './context.js';
 export * from './json.js';
-export * from './schema-error.js';
+export * from './schema.js';
+export * from './util.js';
 
-export * from './schemas/array.js';
-export * from './schemas/bool.js';
-export * from './schemas/choice.js';
-export * from './schemas/object.js';
-export * from './schemas/option.js';
-export * from './schemas/record.js';
-export * from './schemas/string.js';
-export * from './schemas/timestamp.js';
-
-export * from './schemas/num/f64.js';
-export * from './schemas/num/i32.js';
-export * from './schemas/num/i64.js';
-export * from './schemas/num/u32.js';
-export * from './schemas/num/u64.js';
+export * from './codecs/array.js';
+export * from './codecs/bigint.js';
+export * from './codecs/choice.js';
+export * from './codecs/date.js';
+export * from './codecs/i32.js';
+export * from './codecs/i64.js';
+export * from './codecs/object.js';
+export * from './codecs/option.js';
+export * from './codecs/record.js';
+export * from './codecs/simple.js';
+export * from './codecs/u32.js';
+export * from './codecs/u64.js';

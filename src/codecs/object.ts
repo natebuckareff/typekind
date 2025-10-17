@@ -1,0 +1,115 @@
+import { CodecError } from '../codec-error.js';
+import { AnyCodec, Codec } from '../codec.js';
+import { Context } from '../context.js';
+import { isObject, Json } from '../json.js';
+import { AnySchema, Schema } from '../schema.js';
+import { Simplify } from '../util.js';
+import { OptionCodec } from './option.js';
+
+export type ObjectSpec = {
+  [key: string]: AnyCodec;
+};
+
+export type InferObjectType<Spec extends ObjectSpec> = Simplify<
+  {
+    [K in keyof Spec as Spec[K] extends OptionCodec<any>
+      ? never
+      : K]: Spec[K]['Type'];
+  } & {
+    [K in keyof Spec as Spec[K] extends OptionCodec<any>
+      ? K
+      : never]?: Spec[K]['Type'];
+  }
+>;
+
+export class ObjectSchema extends Schema<'object'> {
+  constructor(public readonly properties: Record<string, AnySchema>) {
+    super('object');
+  }
+}
+
+export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
+  InferObjectType<Spec>,
+  ObjectSchema
+> {
+  constructor(public readonly spec: Spec) {
+    super();
+  }
+
+  schema(): ObjectSchema {
+    const schema: Record<string, AnySchema> = {};
+    for (const [key, codec] of Object.entries(this.spec)) {
+      schema[key] = codec.schema();
+    }
+    return new ObjectSchema(schema);
+  }
+
+  serialize(input: this['Type'], ctx?: Context): Json {
+    ctx ??= new Context();
+    let out: any | undefined;
+
+    for (const [key, codec] of Object.entries(this.spec)) {
+      if (!input.hasOwnProperty(key) && !(codec instanceof OptionCodec)) {
+        throw new CodecError(
+          `missing property: ${JSON.stringify(key)}`,
+          ctx.clone(key).pop(),
+        );
+      }
+    }
+
+    for (const [key, value] of Object.entries(input)) {
+      const codec = this.spec[key];
+      if (!codec) {
+        throw new CodecError(
+          `unexpected property: ${JSON.stringify(key)}`,
+          ctx.clone(key).pop(),
+        );
+      }
+      const serialized = codec.serialize(value, ctx.clone(key));
+      if (!out && value !== serialized) {
+        out = { ...(input as object) };
+      }
+      if (out) {
+        out[key] = serialized;
+      }
+    }
+    return out ?? input;
+  }
+
+  deserialize(json: Json, ctx?: Context): this['Type'] {
+    if (!isObject(json)) {
+      CodecError.throw(this, typeof json, ctx);
+    }
+
+    ctx ??= new Context();
+    let out: any | undefined;
+
+    for (const key of Object.keys(this.spec)) {
+      if (!(key in json)) {
+        throw new CodecError(
+          `missing property: ${JSON.stringify(key)}`,
+          ctx.clone(key).pop(),
+        );
+      }
+    }
+
+    for (const key in json) {
+      const value = json[key]!;
+      const codec = this.spec[key];
+      if (!codec) {
+        throw new CodecError(
+          `unexpected property: ${JSON.stringify(key)}`,
+          ctx.clone(key).pop(),
+        );
+      }
+      const serialized = codec.deserialize(value, ctx.clone(key));
+      if (!out && value !== serialized) {
+        out = { ...(json as object) };
+      }
+      if (out) {
+        out[key] = serialized;
+      }
+    }
+    return out ?? json;
+  }
+}
