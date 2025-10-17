@@ -4,6 +4,11 @@ import { Context } from '../context.js';
 import { isObject, Json } from '../json.js';
 import { AnySchema, Schema } from '../schema.js';
 
+export interface KeyCodec<T> extends Codec<T, AnySchema> {
+  fromJsonProperty(key: string, ctx?: Context): string | number;
+  toJsonProperty(key: string, ctx?: Context): string | number;
+}
+
 export class RecordSchema extends Schema<'record'> {
   constructor(
     public readonly key: AnySchema,
@@ -14,7 +19,7 @@ export class RecordSchema extends Schema<'record'> {
 }
 
 export class RecordCodec<
-  Key extends AnyCodec,
+  Key extends KeyCodec<any>,
   Value extends AnyCodec,
 > extends Codec<Record<Key['Type'], Value['Type']>, RecordSchema> {
   constructor(
@@ -34,10 +39,11 @@ export class RecordCodec<
     for (const key in value) {
       const field = value[key];
       const c = ctx.clone(key);
-      const serializedKey = this.key.serialize(key, c);
+      const serializedKey = this.key.toJsonProperty(key, c);
       const serializedField = this.value.serialize(field, c);
       if (!out && (field !== serializedField || key !== serializedKey)) {
         out = { ...(value as object) };
+        delete out[key];
       }
       if (out) {
         out[serializedKey as any] = serializedField;
@@ -55,10 +61,11 @@ export class RecordCodec<
     for (const key in json) {
       const field = json[key]!;
       const c = ctx.clone(key);
-      const deserializedKey = this.key.deserialize(key, c);
+      const deserializedKey = this.key.fromJsonProperty(key, c);
       const deserializedField = this.value.deserialize(field, c);
       if (!out && (field !== deserializedField || key !== deserializedKey)) {
         out = { ...json };
+        delete out[key];
       }
       if (out) {
         out[deserializedKey] = deserializedField;

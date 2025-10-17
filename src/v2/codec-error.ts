@@ -6,11 +6,28 @@ export class CodecError extends Error {
     super(renderErrorMessage(message, ctx));
   }
 
-  static throw(codec: AnyCodec, value: unknown, ctx?: Context): never {
-    throw new CodecError(
-      `expected "${codec.schema().type}" got "${typeof value}"`,
-      ctx,
-    );
+  static throw(
+    codec: AnyCodec | string | (AnyCodec | string)[],
+    value: unknown,
+    ctx?: Context,
+  ): never {
+    CodecError.throwExplicit(codec, typeof value, ctx);
+  }
+
+  // TODO: migrate `throw` to this
+  static throwExplicit(
+    codec: AnyCodec | string | (AnyCodec | string)[],
+    got: string,
+    ctx?: Context,
+  ): never {
+    const name = (x: AnyCodec | string): string => {
+      return `"${typeof x === 'string' ? x : x.schema().type}"`;
+    };
+    const expected = Array.isArray(codec)
+      ? `expected one of (${codec.map(name).join(', ')})`
+      : `expected ${name(codec)}`;
+
+    throw new CodecError(`${expected} but got "${got}"`, ctx);
   }
 }
 

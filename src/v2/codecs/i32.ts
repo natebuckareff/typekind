@@ -1,8 +1,10 @@
 import { CodecError } from '../codec-error.js';
 import { Codec } from '../codec.js';
 import { Context } from '../context.js';
-import { isNumber, Json } from '../json.js';
+import { isNumber, isRegex, Json } from '../json.js';
+import { INTEGER_REGEX } from '../regex.js';
 import { Schema } from '../schema.js';
+import { KeyCodec } from './record.js';
 
 /** @internal */
 declare const i32Symbol: unique symbol;
@@ -15,9 +17,20 @@ export const MAX_I32 = i32(2_147_483_647);
 
 export class I32Schema extends Schema<'i32'> {}
 
-export class I32Codec extends Codec<I32, I32Schema> {
+export class I32Codec extends Codec<I32, I32Schema> implements KeyCodec<I32> {
   schema(): I32Schema {
     return new I32Schema('i32');
+  }
+
+  toJsonProperty(key: string, _?: Context): string | number {
+    return key;
+  }
+
+  fromJsonProperty(key: string, ctx?: Context): string | number {
+    if (!isRegex(key, INTEGER_REGEX)) {
+      CodecError.throw(this, key, ctx);
+    }
+    return this.deserialize(Number(key), ctx);
   }
 
   serialize(value: I32, _?: Context): Json {

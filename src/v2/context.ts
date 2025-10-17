@@ -3,10 +3,12 @@ export class Context {
 
   clone(key?: number | string): Context {
     const ctx = new Context(this.path.slice());
-    if (key !== undefined) {
-      ctx.path.push(key);
-    }
-    return ctx;
+    return key !== undefined ? ctx.push(key) : ctx;
+  }
+
+  push(key: number | string): Context {
+    this.path.push(key);
+    return this;
   }
 
   pop(): Context {
