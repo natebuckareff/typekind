@@ -65,7 +65,7 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
 
   deserialize(json: Json, ctx?: Context): InferChoiceType<Spec> {
     if (!isObject(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
 
     const kind = json.kind;
@@ -73,7 +73,7 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
     if (kind === undefined) {
       throw new CodecError('missing "kind" property', ctx);
     } else if (!isString(kind)) {
-      CodecError.throw(this, kind, ctx);
+      CodecError.throw(this, typeof kind, ctx);
     }
 
     const spec = this.spec[kind];

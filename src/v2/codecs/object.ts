@@ -78,7 +78,7 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
 
   deserialize(json: Json, ctx?: Context): this['Type'] {
     if (!isObject(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
 
     ctx ??= new Context();

@@ -28,7 +28,7 @@ export class I32Codec extends Codec<I32, I32Schema> implements KeyCodec<I32> {
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
     if (!isRegex(key, INTEGER_REGEX)) {
-      CodecError.throw(this, key, ctx);
+      CodecError.throw(this, typeof key, ctx);
     }
     return this.deserialize(Number(key), ctx);
   }
@@ -39,7 +39,7 @@ export class I32Codec extends Codec<I32, I32Schema> implements KeyCodec<I32> {
 
   deserialize(json: Json, ctx?: Context): I32 {
     if (!isNumber(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     if (json < MIN_I32 || json > MAX_I32) {
       throw new CodecError(`number is out-of-range for i32`, ctx);

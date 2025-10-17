@@ -54,7 +54,7 @@ export class RecordCodec<
 
   deserialize(json: Json, ctx?: Context): this['Type'] {
     if (!isObject(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     ctx ??= new Context();
     let out: any | undefined;

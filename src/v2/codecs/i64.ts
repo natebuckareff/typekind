@@ -36,7 +36,7 @@ export class I64Codec extends Codec<I64, I64Schema> implements KeyCodec<I64> {
 
   deserialize(json: Json, ctx?: Context): I64 {
     if (!isRegex(json, INTEGER_REGEX)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     const int = BigInt(json);
     if (int < MIN_I64 || int > MAX_I64) {

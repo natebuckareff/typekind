@@ -27,7 +27,7 @@ export class U32Codec extends Codec<U32, U32Schema> implements KeyCodec<U32> {
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
     if (!isRegex(key, NATURAL_NUMBER_REGEX)) {
-      CodecError.throw(this, key, ctx);
+      CodecError.throw(this, typeof key, ctx);
     }
     return key;
   }
@@ -38,7 +38,7 @@ export class U32Codec extends Codec<U32, U32Schema> implements KeyCodec<U32> {
 
   deserialize(json: Json, ctx?: Context): U32 {
     if (!isNumber(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     if (json < 0 || json > MAX_U32) {
       throw new CodecError(`number is out-of-range for u32`, ctx);

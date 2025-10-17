@@ -22,7 +22,7 @@ export class DateCodec
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
     if (!isRegex(key, INTEGER_REGEX)) {
-      CodecError.throw(this, key, ctx);
+      CodecError.throw(this, typeof key, ctx);
     }
     return this.deserialize(Number(key), ctx).getTime();
   }
@@ -33,7 +33,7 @@ export class DateCodec
 
   deserialize(json: Json, ctx?: Context): Date {
     if (!isNumber(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     return new Date(json);
   }

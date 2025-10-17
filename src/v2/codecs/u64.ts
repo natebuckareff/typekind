@@ -35,7 +35,7 @@ export class U64Codec extends Codec<U64, U64Schema> implements KeyCodec<U64> {
 
   deserialize(json: Json, ctx?: Context): U64 {
     if (!isRegex(json, NATURAL_NUMBER_REGEX)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     const int = BigInt(json);
     if (int < 0n || int > MAX_U64) {

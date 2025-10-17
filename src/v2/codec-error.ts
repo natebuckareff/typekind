@@ -8,15 +8,6 @@ export class CodecError extends Error {
 
   static throw(
     codec: AnyCodec | string | (AnyCodec | string)[],
-    value: unknown,
-    ctx?: Context,
-  ): never {
-    CodecError.throwExplicit(codec, typeof value, ctx);
-  }
-
-  // TODO: migrate `throw` to this
-  static throwExplicit(
-    codec: AnyCodec | string | (AnyCodec | string)[],
     got: string,
     ctx?: Context,
   ): never {

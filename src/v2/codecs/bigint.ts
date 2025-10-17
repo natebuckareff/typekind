@@ -30,7 +30,7 @@ export class BigIntCodec
 
   deserialize(json: Json, ctx?: Context): bigint {
     if (!isRegex(json, INTEGER_REGEX)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     return BigInt(json);
   }

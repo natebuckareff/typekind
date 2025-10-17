@@ -36,7 +36,7 @@ function createCodec<const Name extends string, Type>(
 
     deserialize(json: Json, ctx?: Context): Type {
       if (!check(json)) {
-        CodecError.throw(this, json, ctx);
+        CodecError.throw(this, typeof json, ctx);
       }
       return json;
     }
@@ -50,7 +50,7 @@ export const NullCodec = createCodec<'null', null>(
     if (str === 'null') {
       return null;
     }
-    CodecError.throwExplicit('null', str);
+    CodecError.throw('null', str);
   },
 );
 
@@ -63,7 +63,7 @@ export const BoolCodec = createCodec<'boolean', boolean>(
     } else if (str === 'false') {
       return false;
     } else {
-      CodecError.throwExplicit(['true', 'false'], str);
+      CodecError.throw(['true', 'false'], str);
     }
   },
 );
@@ -84,6 +84,6 @@ export const NumberCodec = createCodec<'number', number>(
     if (FLOAT64_REGEX.test(str)) {
       return Number(str);
     }
-    CodecError.throwExplicit('number', str);
+    CodecError.throw('number', str);
   },
 );

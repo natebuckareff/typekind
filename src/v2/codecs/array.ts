@@ -41,7 +41,7 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
   deserialize(json: Json, ctx?: Context): this['Type'] {
     ctx ??= new Context();
     if (!isArray(json)) {
-      CodecError.throw(this, json, ctx);
+      CodecError.throw(this, typeof json, ctx);
     }
     let out: any[] | undefined;
     for (let i = 0; i < json.length; i++) {
