@@ -3,6 +3,7 @@ export * as tk from './builder.js';
 export * from './codec-error.js';
 export * from './codec.js';
 export * from './context.js';
+export * from './extend.js';
 export * from './json.js';
 export * from './schema.js';
 export * from './util.js';
