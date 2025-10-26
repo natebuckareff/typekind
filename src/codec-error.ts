@@ -1,5 +1,5 @@
-import { AnyCodec } from './codec.js';
-import { Context } from './context.js';
+import type { AnyCodec } from './codec.js';
+import type { Context } from './context.js';
 
 export class CodecError extends Error {
   constructor(message: string, ctx?: Context) {

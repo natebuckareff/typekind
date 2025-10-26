@@ -1,7 +1,7 @@
-import { AnyCodec, Codec } from '../codec.js';
-import { Context } from '../context.js';
-import { Json } from '../json.js';
-import { AnySchema, Schema } from '../schema.js';
+import { type AnyCodec, Codec } from '../codec.js';
+import type { Context } from '../context.js';
+import type { Json } from '../json.js';
+import { type AnySchema, Schema } from '../schema.js';
 
 export class OptionSchema extends Schema<'option'> {
   constructor(public readonly of: AnySchema) {

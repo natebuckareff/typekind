@@ -1,9 +1,9 @@
+import { type AnyCodec, Codec } from '../codec.js';
 import { CodecError } from '../codec-error.js';
-import { AnyCodec, Codec } from '../codec.js';
-import { Context } from '../context.js';
-import { isObject, isString, Json, JsonObject } from '../json.js';
-import { AnySchema, Schema } from '../schema.js';
-import { Simplify } from '../util.js';
+import type { Context } from '../context.js';
+import { isObject, isString, type Json, type JsonObject } from '../json.js';
+import { type AnySchema, Schema } from '../schema.js';
+import type { Simplify } from '../util.js';
 import { ObjectCodec } from './object.js';
 
 export type ChoiceSpec = {

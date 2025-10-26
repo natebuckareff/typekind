@@ -1,8 +1,8 @@
+import { type AnyCodec, Codec } from '../codec.js';
 import { CodecError } from '../codec-error.js';
-import { AnyCodec, Codec } from '../codec.js';
 import { Context } from '../context.js';
-import { isArray, Json } from '../json.js';
-import { AnySchema, Schema } from '../schema.js';
+import { isArray, type Json } from '../json.js';
+import { type AnySchema, Schema } from '../schema.js';
 
 export class ArraySchema extends Schema<'array'> {
   constructor(public readonly elements: AnySchema) {

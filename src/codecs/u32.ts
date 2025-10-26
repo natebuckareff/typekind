@@ -1,10 +1,10 @@
-import { CodecError } from '../codec-error.js';
 import { Codec } from '../codec.js';
-import { Context } from '../context.js';
-import { isNumber, isRegex, Json } from '../json.js';
+import { CodecError } from '../codec-error.js';
+import type { Context } from '../context.js';
+import { isNumber, isRegex, type Json } from '../json.js';
 import { NATURAL_NUMBER_REGEX } from '../regex.js';
 import { Schema } from '../schema.js';
-import { KeyCodec } from './record.js';
+import type { KeyCodec } from './record.js';
 
 /** @internal */
 declare const u32Symbol: unique symbol;

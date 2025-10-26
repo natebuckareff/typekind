@@ -1,9 +1,9 @@
-import { CodecError } from '../codec-error.js';
 import { Codec } from '../codec.js';
-import { Context } from '../context.js';
-import { Json } from '../json.js';
-import { Schema } from '../schema.js';
-import { KeyCodec } from './record.js';
+import { CodecError } from '../codec-error.js';
+import type { Context } from '../context.js';
+import type { Json } from '../json.js';
+import type { Schema } from '../schema.js';
+import type { KeyCodec } from './record.js';
 
 function createSchema<const Name extends string>(type: Name): Schema<Name> {
   return { type } as Schema<Name>;
@@ -75,7 +75,7 @@ export const StringCodec = createCodec<'string', string>(
 );
 
 const FLOAT64_REGEX =
-  /^(?:NaN|-?Infinity|-?(?:0|[1-9]\d*)(?:\.\d+)?|-?\d(?:\.\d+)?e[+\-]?\d+)$/;
+  /^(?:NaN|-?Infinity|-?(?:0|[1-9]\d*)(?:\.\d+)?|-?\d(?:\.\d+)?e[+-]?\d+)$/;
 
 export const NumberCodec = createCodec<'number', number>(
   'number',

@@ -1,22 +1,21 @@
-import { AnyCodec } from './codec.js';
+import type { AnyCodec } from './codec.js';
 import { ArrayCodec } from './codecs/array.js';
 import { BigIntCodec } from './codecs/bigint.js';
-import { ChoiceCodec, ChoiceSpec } from './codecs/choice.js';
+import { ChoiceCodec, type ChoiceSpec } from './codecs/choice.js';
 import { DateCodec } from './codecs/date.js';
 import { I32Codec } from './codecs/i32.js';
 import { I64Codec } from './codecs/i64.js';
-import { ObjectCodec, ObjectSpec } from './codecs/object.js';
+import { ObjectCodec, type ObjectSpec } from './codecs/object.js';
 import { OptionCodec } from './codecs/option.js';
-import { KeyCodec, RecordCodec } from './codecs/record.js';
-import { U32Codec } from './codecs/u32.js';
-import { U64Codec } from './codecs/u64.js';
-
+import { type KeyCodec, RecordCodec } from './codecs/record.js';
 import {
   BoolCodec,
   NullCodec,
   NumberCodec,
   StringCodec,
 } from './codecs/simple.js';
+import { U32Codec } from './codecs/u32.js';
+import { U64Codec } from './codecs/u64.js';
 
 export const rec = <C extends AnyCodec>(fn: () => C) => fn();
 

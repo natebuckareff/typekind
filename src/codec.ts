@@ -1,6 +1,6 @@
-import { Context } from './context.js';
-import { Json, parseJson, stringifyJson } from './json.js';
-import { AnySchema } from './schema.js';
+import type { Context } from './context.js';
+import { type Json, parseJson, stringifyJson } from './json.js';
+import type { AnySchema } from './schema.js';
 
 export type AnyCodec = Codec<any, AnySchema>;
 

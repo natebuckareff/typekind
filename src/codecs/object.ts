@@ -1,9 +1,9 @@
+import { type AnyCodec, Codec } from '../codec.js';
 import { CodecError } from '../codec-error.js';
-import { AnyCodec, Codec } from '../codec.js';
 import { Context } from '../context.js';
-import { isObject, Json } from '../json.js';
-import { AnySchema, Schema } from '../schema.js';
-import { Simplify } from '../util.js';
+import { isObject, type Json } from '../json.js';
+import { type AnySchema, Schema } from '../schema.js';
+import type { Simplify } from '../util.js';
 import { OptionCodec } from './option.js';
 
 export type ObjectSpec = {
@@ -49,7 +49,7 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
     let out: any | undefined;
 
     for (const [key, codec] of Object.entries(this.spec)) {
-      if (!input.hasOwnProperty(key) && !(codec instanceof OptionCodec)) {
+      if (!Object.hasOwn(input, key) && !(codec instanceof OptionCodec)) {
         throw new CodecError(
           `missing property: ${JSON.stringify(key)}`,
           ctx.clone(key).pop(),
