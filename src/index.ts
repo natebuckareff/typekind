@@ -17,6 +17,5 @@ export * from './codecs/i64.js';
 export * from './codecs/object.js';
 export * from './codecs/option.js';
 export * from './codecs/record.js';
-export * from './codecs/simple.js';
 export * from './codecs/u32.js';
 export * from './codecs/u64.js';
