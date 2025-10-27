@@ -11,12 +11,17 @@ export * from './util.js';
 
 export * from './codecs/array.js';
 export * from './codecs/bigint.js';
+export * from './codecs/bool.js';
 export * from './codecs/choice.js';
 export * from './codecs/date.js';
 export * from './codecs/i32.js';
 export * from './codecs/i64.js';
+export * from './codecs/null.js';
+export * from './codecs/number.js';
 export * from './codecs/object.js';
 export * from './codecs/option.js';
 export * from './codecs/record.js';
+export * from './codecs/string.js';
+export * from './codecs/tuple.js';
 export * from './codecs/u32.js';
 export * from './codecs/u64.js';
