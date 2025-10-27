@@ -1,4 +1,4 @@
-import { createBuilder } from './builder.js';
+import { type Builder, createBuilder } from './builder.js';
 import type { AnyCodec } from './codec.js';
 import { ArrayCodec } from './codecs/array.js';
 import { BigIntCodec } from './codecs/bigint.js';
@@ -13,6 +13,7 @@ import { ObjectCodec, type ObjectSpec } from './codecs/object.js';
 import { OptionCodec } from './codecs/option.js';
 import { type KeyCodec, RecordCodec } from './codecs/record.js';
 import { StringCodec } from './codecs/string.js';
+import { TupleCodec } from './codecs/tuple.js';
 import { U32Codec } from './codecs/u32.js';
 import { U64Codec } from './codecs/u64.js';
 
@@ -41,6 +42,19 @@ export const array = createBuilder(
   ArrayCodec,
   <C extends AnyCodec>(codec: C) => {
     return new ArrayCodec(codec);
+  },
+);
+
+// need a custom builder to get inferrence working
+function createTupleBuilder<const Elements extends AnyCodec[]>(
+  fn: (...args: Elements) => TupleCodec<Elements>,
+): Builder<TupleCodec<Elements>, Elements> {
+  return (...args: Elements) => fn(...args);
+}
+
+export const tuple = createTupleBuilder(
+  <const Elements extends AnyCodec[]>(...elements: Elements) => {
+    return new TupleCodec<Elements>(elements);
   },
 );
 

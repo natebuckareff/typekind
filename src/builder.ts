@@ -1,5 +1,8 @@
 import type { AnyCodec } from './codec.js';
 
+// TODO: Memoize builder. Can use `cls` to build key. Will also need to update
+// `createTupleBuilder`
+
 export type Builder<C extends AnyCodec, Args extends any[]> = (
   ...args: Args
 ) => C;
@@ -8,12 +11,12 @@ export function createBuilder<C extends AnyCodec>(
   cls: new () => C,
 ): Builder<C, []>;
 
-export function createBuilder<C extends AnyCodec, Args extends any[]>(
-  cls: new (...args: Args) => C,
+export function createBuilder<C extends AnyCodec, const Args extends any[]>(
+  cls: new (...args: any[]) => C,
   fn: (...args: Args) => C,
 ): Builder<C, Args>;
 
-export function createBuilder<C extends AnyCodec, Args extends any[]>(
+export function createBuilder<C extends AnyCodec, const Args extends any[]>(
   cls: new (...args: Args) => C,
   fn?: () => C,
 ): Builder<C, Args> {
