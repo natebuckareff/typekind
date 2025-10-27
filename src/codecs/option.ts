@@ -23,6 +23,14 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
     this.codec = codec;
   }
 
+  override get(property: number | string): AnyCodec {
+    let sub: AnyCodec = this.codec.get(property);
+    while (sub instanceof OptionCodec) {
+      sub = sub.codec;
+    }
+    return new OptionCodec(sub);
+  }
+
   schema(): OptionSchema {
     return new OptionSchema(this.codec.schema());
   }

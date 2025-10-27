@@ -3,6 +3,7 @@ import { CodecError } from '../codec-error.js';
 import { Context } from '../context.js';
 import { isArray, type Json } from '../json.js';
 import { type AnySchema, Schema } from '../schema.js';
+import { OptionCodec } from './option.js';
 
 export class ArraySchema extends Schema<'array'> {
   constructor(public readonly elements: AnySchema) {
@@ -16,6 +17,10 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
 > {
   constructor(public readonly codec: T) {
     super();
+  }
+
+  override get(_: number | string): AnyCodec {
+    return new OptionCodec(this.codec);
   }
 
   schema(): ArraySchema {

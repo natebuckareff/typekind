@@ -46,6 +46,10 @@ export abstract class Codec<Type, S extends AnySchema> {
     return this.deserialize(json, ctx);
   }
 
+  get(_: number | string): AnyCodec {
+    throw Error(`cannot get sub-codec for "${this.constructor.name}"`);
+  }
+
   abstract schema(): S;
   abstract serialize(value: Type, ctx?: Context): Json;
   abstract deserialize(value: Json, ctx?: Context): Type;

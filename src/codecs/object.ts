@@ -44,6 +44,20 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
     return new ObjectSchema(schema);
   }
 
+  override get(property: number | string): AnyCodec {
+    if (typeof property !== 'string') {
+      throw Error(`expected string property but got "${typeof property}"`);
+    }
+
+    const codec = this.spec[property];
+
+    if (!codec) {
+      throw Error(`unknown object codec property: "${property}"`);
+    }
+
+    return codec;
+  }
+
   serialize(input: this['Type'], ctx?: Context): Json {
     ctx ??= new Context();
     let out: any | undefined;
