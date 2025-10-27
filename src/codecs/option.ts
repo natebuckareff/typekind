@@ -13,8 +13,22 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
   T['Type'] | undefined,
   OptionSchema
 > {
-  constructor(public readonly codec: T) {
+  public readonly codec: T;
+
+  constructor(codec: T) {
     super();
+    while (codec instanceof OptionCodec) {
+      codec = codec.codec;
+    }
+    this.codec = codec;
+  }
+
+  override get(property: number | string): AnyCodec {
+    let sub: AnyCodec = this.codec.get(property);
+    while (sub instanceof OptionCodec) {
+      sub = sub.codec;
+    }
+    return new OptionCodec(sub);
   }
 
   schema(): OptionSchema {

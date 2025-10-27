@@ -1,5 +1,6 @@
-export * as tk from './builder.js';
+export * as tk from './base.js';
 
+export * from './builder.js';
 export * from './codec-error.js';
 export * from './codec.js';
 export * from './context.js';

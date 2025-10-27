@@ -5,8 +5,13 @@ import type { AnySchema } from './schema.js';
 export type AnyCodec = Codec<any, AnySchema>;
 
 export abstract class Codec<Type, S extends AnySchema> {
-  public readonly Type!: Type;
-  public readonly Schema!: S;
+  get Type(): Type {
+    return undefined!;
+  }
+
+  get Schema(): S {
+    return undefined!;
+  }
 
   stringify(
     value: Type,
@@ -39,6 +44,10 @@ export abstract class Codec<Type, S extends AnySchema> {
   ): Type {
     const json = parseJson(text, reviver);
     return this.deserialize(json, ctx);
+  }
+
+  get(_: number | string): AnyCodec {
+    throw Error(`cannot get sub-codec for "${this.constructor.name}"`);
   }
 
   abstract schema(): S;

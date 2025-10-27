@@ -29,6 +29,11 @@ export class RecordCodec<
     super();
   }
 
+  override get(property: number | string): AnyCodec {
+    const _ = this.key.toJsonProperty(property.toString());
+    return this.value;
+  }
+
   schema(): RecordSchema {
     return new RecordSchema(this.key.schema(), this.value.schema());
   }
