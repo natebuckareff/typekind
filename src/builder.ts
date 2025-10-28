@@ -1,33 +1,21 @@
+import _memoize, { type CacheConstructor } from 'trie-memoize';
 import type { AnyCodec } from './codec.js';
 
-// TODO: Memoize builder. Can use `cls` to build key. Will also need to update
-// `createTupleBuilder`
+const memoize: typeof import('trie-memoize').default =
+  _memoize.default ?? _memoize;
 
-export type Builder<C extends AnyCodec, Args extends any[]> = (
-  ...args: Args
-) => C;
+export type Builder = (...args: any[]) => AnyCodec;
 
-export function createBuilder<C extends AnyCodec>(
-  cls: new () => C,
-): Builder<C, []>;
-
-export function createBuilder<C extends AnyCodec, const Args extends any[]>(
-  cls: new (...args: any[]) => C,
-  fn: (...args: Args) => C,
-): Builder<C, Args>;
-
-export function createBuilder<C extends AnyCodec, const Args extends any[]>(
-  cls: new (...args: Args) => C,
-  fn?: () => C,
-): Builder<C, Args> {
-  if (fn) {
-    return fn as Builder<C, Args>;
-  } else {
-    // caching for unary builders
-    const codec = new (cls as new () => C)();
-    const fn = () => codec;
-    return fn as Builder<C, Args>;
+export function createBuilder<const T extends Builder>(fn: T): T {
+  if (fn.length === 0) {
+    return fn;
   }
+  const mapConstructors: CacheConstructor[] = [];
+  for (let i = 0; i < fn.length; ++i) {
+    mapConstructors.push(WeakMap);
+  }
+  const cached = memoize(mapConstructors, fn);
+  return cached as T;
 }
 
 export const rec = <C extends AnyCodec>(fn: () => C) => fn();

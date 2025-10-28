@@ -1,8 +1,8 @@
 import type { Builder } from './builder.js';
-import { type AnyCodec, tk } from './index.js';
+import { tk } from './index.js';
 
 export interface Extensions {
-  [key: string]: Builder<AnyCodec, any[]>;
+  [key: string]: Builder;
 }
 
 export function extendTypeKind<Ext extends Extensions>(

@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      trie-memoize:
+        specifier: ^1.2.0
+        version: 1.2.0
     devDependencies:
       '@biomejs/biome':
         specifier: 2.3.0
@@ -257,6 +261,9 @@ packages:
   resolve-pkg-maps@1.0.0:
     resolution: {integrity: sha512-seS2Tj26TBVOC2NIc2rOe2y2ZO7efxITtLZcGSOnHHNOQ7CkiUBfw0Iw2ck6xkIhPwLhKNLS8BO+hEpngQlqzw==}
 
+  trie-memoize@1.2.0:
+    resolution: {integrity: sha512-hEDLVEP1FCgaRtt0oZDJdz2lK9uK7WlB7ASswt9U9cqruSNueVigtRGxI97hevKlViqhAcRgNgzuY/m8FCCMcg==}
+
   tsx@4.20.3:
     resolution: {integrity: sha512-qjbnuR9Tr+FJOMBqJCW5ehvIo/buZq7vH7qD7JziU98h6l3qGy0a/yPFjwO+y0/T7GFpNgNAvEcPPVfyT8rrPQ==}
     engines: {node: '>=18.0.0'}
@@ -428,6 +435,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   resolve-pkg-maps@1.0.0: {}
+
+  trie-memoize@1.2.0: {}
 
   tsx@4.20.3:
     dependencies:
