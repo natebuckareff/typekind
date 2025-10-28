@@ -39,30 +39,28 @@ export {
 export const date = createBuilder(() => new DateCodec());
 
 export const array = createBuilder(
-  <const C extends AnyCodec>(codec: C) => new ArrayCodec(codec),
+  <C extends AnyCodec>(codec: C) => new ArrayCodec(codec),
 );
 
 export const tuple = createBuilder(
-  <const E extends AnyCodec[]>(...elements: E) => new TupleCodec<E>(elements),
+  <E extends AnyCodec[]>(...elements: E) => new TupleCodec<E>(elements),
 );
 
 export const choice = createBuilder(
-  <const S extends ChoiceSpec>(spec: S) => new ChoiceCodec(spec),
+  <S extends ChoiceSpec>(spec: S) => new ChoiceCodec(spec),
 );
 
 export const option = createBuilder(
-  <const C extends AnyCodec>(codec: C) => new OptionCodec(codec),
+  <C extends AnyCodec>(codec: C) => new OptionCodec(codec),
 );
 
 export const record = createBuilder(
-  <const Key extends KeyCodec<any>, const Value extends AnyCodec>(
-    key: Key,
-    value: Value,
-  ) => new RecordCodec(key, value),
+  <Key extends KeyCodec<any>, Value extends AnyCodec>(key: Key, value: Value) =>
+    new RecordCodec(key, value),
 );
 
 const _object = createBuilder(
-  <const S extends ObjectSpec>(spec: S) => new ObjectCodec(spec),
+  <S extends ObjectSpec>(spec: S) => new ObjectCodec(spec),
 );
 
 export { _object as object };
