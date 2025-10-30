@@ -4,18 +4,18 @@ import type { Context } from '../context.js';
 import type { Json } from '../json.js';
 import { Schema } from '../schema.js';
 
-export class VoidSchema extends Schema<'void'> {}
+export class UndefinedSchema extends Schema<'undefined'> {}
 
-export class VoidCodec extends Codec<void, VoidSchema> {
-  schema(): VoidSchema {
-    return new VoidSchema('void');
+export class UndefinedCodec extends Codec<undefined, UndefinedSchema> {
+  schema(): UndefinedSchema {
+    return new UndefinedSchema('undefined');
   }
 
-  serialize(_value: void, _?: Context): Json {
+  serialize(_value: this['Type'], _?: Context): Json {
     return null;
   }
 
-  deserialize(json: Json, ctx?: Context): void {
+  deserialize(json: Json, ctx?: Context): this['Type'] {
     if (json !== null) {
       CodecError.throw(this, typeof json, ctx);
     }

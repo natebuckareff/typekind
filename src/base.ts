@@ -17,6 +17,7 @@ import { StringCodec } from './codecs/string.js';
 import { TupleCodec } from './codecs/tuple.js';
 import { U32Codec } from './codecs/u32.js';
 import { U64Codec } from './codecs/u64.js';
+import { UndefinedCodec } from './codecs/undefined.js';
 import { VoidCodec } from './codecs/void.js';
 
 export const i32 = createBuilder(() => new I32Codec());
@@ -24,6 +25,7 @@ export const i64 = createBuilder(() => new I64Codec());
 export const u32 = createBuilder(() => new U32Codec());
 export const u64 = createBuilder(() => new U64Codec());
 
+const _undefined = createBuilder(() => new UndefinedCodec());
 const _void = createBuilder(() => new VoidCodec());
 const _null = createBuilder(() => new NullCodec());
 const _bool = createBuilder(() => new BoolCodec());
@@ -32,6 +34,7 @@ const _string = createBuilder(() => new StringCodec());
 const _bigint = createBuilder(() => new BigIntCodec());
 
 export {
+  _undefined as undefined,
   _void as void,
   _bigint as bigint,
   _bool as bool,
