@@ -26,11 +26,11 @@ export class NullCodec
     return key;
   }
 
-  serialize(value: null, _?: Context): Json {
+  override serializeImpl(value: null, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): null {
+  override deserializeImpl(json: Json, ctx?: Context): null {
     if (json !== null) {
       CodecError.throw(this, typeof json, ctx);
     }

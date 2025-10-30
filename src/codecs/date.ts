@@ -24,14 +24,14 @@ export class DateCodec
     if (!isRegex(key, INTEGER_REGEX)) {
       CodecError.throw(this, typeof key, ctx);
     }
-    return this.deserialize(Number(key), ctx).getTime();
+    return this.deserializeImpl(Number(key), ctx).getTime();
   }
 
-  serialize(value: Date, _?: Context): Json {
+  override serializeImpl(value: Date, _?: Context): Json {
     return value.getTime();
   }
 
-  deserialize(json: Json, ctx?: Context): Date {
+  override deserializeImpl(json: Json, ctx?: Context): Date {
     if (!isNumber(json)) {
       CodecError.throw(this, typeof json, ctx);
     }

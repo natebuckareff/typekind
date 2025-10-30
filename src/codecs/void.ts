@@ -11,11 +11,11 @@ export class VoidCodec extends Codec<void, VoidSchema> {
     return new VoidSchema('void');
   }
 
-  serialize(_value: void, _?: Context): Json {
+  override serializeImpl(_value: void, _?: Context): Json {
     return null;
   }
 
-  deserialize(json: Json, ctx?: Context): void {
+  override deserializeImpl(json: Json, ctx?: Context): void {
     if (json !== null) {
       CodecError.throw(this, typeof json, ctx);
     }

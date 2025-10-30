@@ -27,14 +27,14 @@ export class I64Codec extends Codec<I64, I64Schema> implements KeyCodec<I64> {
   }
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
-    return this.deserialize(key, ctx).toString();
+    return this.deserializeImpl(key, ctx).toString();
   }
 
-  serialize(value: I64, _?: Context): Json {
+  override serializeImpl(value: I64, _?: Context): Json {
     return value.toString();
   }
 
-  deserialize(json: Json, ctx?: Context): I64 {
+  override deserializeImpl(json: Json, ctx?: Context): I64 {
     if (!isRegex(json, INTEGER_REGEX)) {
       CodecError.throw(this, typeof json, ctx);
     }

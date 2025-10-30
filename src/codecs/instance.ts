@@ -24,7 +24,7 @@ export class InstanceCodec<Cls extends Class<any, any[]>> extends Codec<
     return new InstanceSchema(this.cls.name);
   }
 
-  serialize(value: this['Type'], _?: Context): Json {
+  override serializeImpl(value: this['Type'], _?: Context): Json {
     if ('toJSON' in value && typeof value.toJSON === 'function') {
       return value.toJSON();
     }
@@ -32,7 +32,7 @@ export class InstanceCodec<Cls extends Class<any, any[]>> extends Codec<
     throw Error(`class serialization not supported for "${this.cls.name}"`);
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
     if ('fromJSON' in this.cls && typeof this.cls.fromJSON === 'function') {
       const deserialized = this.cls.fromJSON(json);
 

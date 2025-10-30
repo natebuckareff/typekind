@@ -21,14 +21,14 @@ export class BigIntCodec
   }
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
-    return this.deserialize(key, ctx).toString();
+    return this.deserializeImpl(key, ctx).toString();
   }
 
-  serialize(value: bigint, _?: Context): Json {
+  override serializeImpl(value: bigint, _?: Context): Json {
     return value.toString();
   }
 
-  deserialize(json: Json, ctx?: Context): bigint {
+  override deserializeImpl(json: Json, ctx?: Context): bigint {
     if (!isRegex(json, INTEGER_REGEX)) {
       CodecError.throw(this, typeof json, ctx);
     }

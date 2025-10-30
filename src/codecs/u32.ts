@@ -32,11 +32,11 @@ export class U32Codec extends Codec<U32, U32Schema> implements KeyCodec<U32> {
     return key;
   }
 
-  serialize(value: U32, _?: Context): Json {
+  override serializeImpl(value: U32, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): U32 {
+  override deserializeImpl(json: Json, ctx?: Context): U32 {
     if (!isNumber(json)) {
       CodecError.throw(this, typeof json, ctx);
     }

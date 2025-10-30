@@ -26,14 +26,14 @@ export class U64Codec extends Codec<U64, U64Schema> implements KeyCodec<U64> {
   }
 
   fromJsonProperty(key: string, ctx?: Context): string | number {
-    return this.deserialize(key, ctx).toString();
+    return this.deserializeImpl(key, ctx).toString();
   }
 
-  serialize(value: U64, _?: Context): Json {
+  override serializeImpl(value: U64, _?: Context): Json {
     return value.toString();
   }
 
-  deserialize(json: Json, ctx?: Context): U64 {
+  override deserializeImpl(json: Json, ctx?: Context): U64 {
     if (!isRegex(json, NATURAL_NUMBER_REGEX)) {
       CodecError.throw(this, typeof json, ctx);
     }

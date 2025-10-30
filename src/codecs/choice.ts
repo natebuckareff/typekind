@@ -42,7 +42,7 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
     return new ChoiceSchema(schema);
   }
 
-  serialize(input: InferChoiceType<Spec>, ctx?: Context): Json {
+  override serializeImpl(input: InferChoiceType<Spec>, ctx?: Context): Json {
     const kind = input.kind as string;
     const spec: AnyCodec | undefined | null = this.spec[kind];
 
@@ -63,7 +63,7 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
     }
   }
 
-  deserialize(json: Json, ctx?: Context): InferChoiceType<Spec> {
+  override deserializeImpl(json: Json, ctx?: Context): InferChoiceType<Spec> {
     if (!isObject(json)) {
       CodecError.throw(this, typeof json, ctx);
     }

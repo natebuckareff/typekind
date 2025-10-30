@@ -11,11 +11,11 @@ export class UndefinedCodec extends Codec<undefined, UndefinedSchema> {
     return new UndefinedSchema('undefined');
   }
 
-  serialize(_value: this['Type'], _?: Context): Json {
+  override serializeImpl(_value: this['Type'], _?: Context): Json {
     return null;
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
     if (json !== null) {
       CodecError.throw(this, typeof json, ctx);
     }

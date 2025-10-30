@@ -30,14 +30,14 @@ export class I32Codec extends Codec<I32, I32Schema> implements KeyCodec<I32> {
     if (!isRegex(key, INTEGER_REGEX)) {
       CodecError.throw(this, typeof key, ctx);
     }
-    return this.deserialize(Number(key), ctx);
+    return this.deserializeImpl(Number(key), ctx);
   }
 
-  serialize(value: I32, _?: Context): Json {
+  override serializeImpl(value: I32, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): I32 {
+  override deserializeImpl(json: Json, ctx?: Context): I32 {
     if (!isNumber(json)) {
       CodecError.throw(this, typeof json, ctx);
     }
