@@ -16,6 +16,7 @@ export * from './codecs/choice.js';
 export * from './codecs/date.js';
 export * from './codecs/i32.js';
 export * from './codecs/i64.js';
+export * from './codecs/instance.js';
 export * from './codecs/null.js';
 export * from './codecs/number.js';
 export * from './codecs/object.js';

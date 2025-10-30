@@ -7,6 +7,7 @@ import { ChoiceCodec, type ChoiceSpec } from './codecs/choice.js';
 import { DateCodec } from './codecs/date.js';
 import { I32Codec } from './codecs/i32.js';
 import { I64Codec } from './codecs/i64.js';
+import { type Class, InstanceCodec } from './codecs/instance.js';
 import { NullCodec } from './codecs/null.js';
 import { NumberCodec } from './codecs/number.js';
 import { ObjectCodec, type ObjectSpec } from './codecs/object.js';
@@ -67,3 +68,7 @@ const _object = createBuilder(
 );
 
 export { _object as object };
+
+export const instance = createBuilder(
+  <Cls extends Class<any, any[]>>(cls: Cls) => new InstanceCodec<Cls>(cls),
+);
