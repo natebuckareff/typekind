@@ -1,5 +1,6 @@
 import { createBuilder } from './builder.js';
 import type { AnyCodec } from './codec.js';
+import { AnyTypeCodec } from './codecs/any.js';
 import { ArrayCodec } from './codecs/array.js';
 import { BigIntCodec } from './codecs/bigint.js';
 import { BoolCodec } from './codecs/bool.js';
@@ -25,6 +26,7 @@ export const i64 = createBuilder(() => new I64Codec());
 export const u32 = createBuilder(() => new U32Codec());
 export const u64 = createBuilder(() => new U64Codec());
 
+const _any = createBuilder(<T>() => new AnyTypeCodec<T>());
 const _undefined = createBuilder(() => new UndefinedCodec());
 const _void = createBuilder(() => new VoidCodec());
 const _null = createBuilder(() => new NullCodec());
@@ -34,6 +36,7 @@ const _string = createBuilder(() => new StringCodec());
 const _bigint = createBuilder(() => new BigIntCodec());
 
 export {
+  _any as any,
   _undefined as undefined,
   _void as void,
   _bigint as bigint,
