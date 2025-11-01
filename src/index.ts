@@ -29,3 +29,4 @@ export * from './codecs/u32.js';
 export * from './codecs/u64.js';
 export * from './codecs/undefined.js';
 export * from './codecs/void.js';
+export * from './ref.js';
