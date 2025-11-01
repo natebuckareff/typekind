@@ -14,6 +14,10 @@ const throwError = (action: string): never => {
   throw Error(`cannot ${action} a ref placeholder value`);
 };
 
+export interface Ref {
+  [refSymbol]: number;
+}
+
 export interface RefConfig<T> {
   handler?: {
     has?: (target: T, p: string | symbol) => boolean;
@@ -22,9 +26,13 @@ export interface RefConfig<T> {
   };
 }
 
+export function isRef(value: unknown): value is Ref {
+  return typeof value === 'function' && refSymbol in value;
+}
+
 export function getRef(value: unknown): number | undefined {
-  if (typeof value === 'object' && value !== null) {
-    return (value as { [refSymbol]: number })[refSymbol];
+  if (isRef(value)) {
+    return value[refSymbol];
   }
 }
 
