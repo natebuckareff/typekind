@@ -15,7 +15,12 @@ const throwError = (action: string): never => {
 };
 
 export interface Ref {
-  [refSymbol]: number;
+  id: number;
+  serialize?: (proxy: RefProxy, ref: Ref) => number | undefined;
+}
+
+export interface RefProxy {
+  [refSymbol]: Ref;
 }
 
 export interface RefConfig<T> {
@@ -24,21 +29,24 @@ export interface RefConfig<T> {
     get?: (target: T, p: string | symbol, receiver: any) => any;
     apply?: (target: T, thisArg: any, argArray: any[]) => any;
   };
+  serialize?: (proxy: RefProxy, ref: Ref) => number | undefined;
 }
 
-export function isRef(value: unknown): value is Ref {
+export function isRefProxy(value: unknown): value is RefProxy {
   return typeof value === 'function' && refSymbol in value;
 }
 
-export function getRef(value: unknown): number | undefined {
-  if (isRef(value)) {
+export function unwrapRef(value: unknown): Ref | undefined {
+  if (isRefProxy(value)) {
     return value[refSymbol];
   }
 }
 
 export function trySerializeRef<T>(value: T): ['@ref', number] | undefined {
-  const id = getRef(value);
-  if (id !== undefined) {
+  if (isRefProxy(value)) {
+    const ref = value[refSymbol];
+    const override = ref.serialize?.(value, ref);
+    const id = override === undefined ? ref.id : override;
     return ['@ref', id];
   }
 }
@@ -82,7 +90,11 @@ export function createRef<T extends object>(
     },
     get(target, p, receiver) {
       if (p === refSymbol) {
-        return id;
+        const value: Ref = { id };
+        if (config?.serialize) {
+          value.serialize = config.serialize;
+        }
+        return value;
       }
       const f = config?.handler?.get;
       if (f) {
