@@ -1,6 +1,14 @@
 export type Json = null | boolean | number | string | Json[] | JsonObject;
 export type JsonObject = { [key: string]: Json };
 
+export type InterfaceToJson<T extends object> = {
+  [K in keyof T]: T[K] extends Json
+    ? T[K]
+    : T[K] extends object
+      ? InterfaceToJson<T[K]>
+      : never;
+};
+
 export function stringifyJson(
   json: any,
   replacer?: (this: any, key: string, value: any) => any,
