@@ -58,6 +58,29 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
     return codec;
   }
 
+  override equals(other: AnyCodec): boolean {
+    if (!(other instanceof ObjectCodec)) {
+      return false;
+    }
+
+    const keys = Object.keys(this.spec);
+    const otherKeys = Object.keys(other.spec);
+
+    if (keys.length !== otherKeys.length) {
+      return false;
+    }
+
+    for (const key of keys) {
+      const codec = this.spec[key];
+      const otherCodec = other.spec[key];
+      if (!codec || !otherCodec || !codec.equals(otherCodec)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   override serializeImpl(input: this['Type'], ctx?: Context): Json {
     ctx ??= Context.create();
     let out: any | undefined;

@@ -34,6 +34,21 @@ export class TupleCodec<const Elements extends AnyCodec[]> extends Codec<
     return element;
   }
 
+  override equals(other: AnyCodec): boolean {
+    if (!(other instanceof TupleCodec)) {
+      return false;
+    }
+
+    if (this.codecs.length !== other.codecs.length) {
+      return false;
+    }
+
+    return this.codecs.every((codec, i) =>
+      // biome-ignore lint/style/noNonNullAssertion: safe with previous check
+      codec.equals((other as TupleCodec<Elements>).codecs[i]!),
+    );
+  }
+
   override serializeImpl(value: this['Type'], ctx?: Context): Json {
     ctx ??= Context.create();
 

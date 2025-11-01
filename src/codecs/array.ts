@@ -19,12 +19,16 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
     super();
   }
 
+  schema(): ArraySchema {
+    return new ArraySchema(this.codec.schema());
+  }
+
   override get(_: number | string): AnyCodec {
     return new OptionCodec(this.codec);
   }
 
-  schema(): ArraySchema {
-    return new ArraySchema(this.codec.schema());
+  override equals(other: AnyCodec): boolean {
+    return other instanceof ArrayCodec && this.codec.equals(other.codec);
   }
 
   override serializeImpl(value: this['Type'], ctx?: Context): Json[] {

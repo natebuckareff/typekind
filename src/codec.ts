@@ -54,6 +54,10 @@ export abstract class Codec<Type, S extends AnySchema> {
     throw Error(`cannot get sub-codec for "${this.constructor.name}"`);
   }
 
+  equals(other: AnyCodec): boolean {
+    return other instanceof this.constructor;
+  }
+
   serialize(value: Type, ctx?: Context): Json {
     const ref = trySerializeRef(value);
     if (ref === undefined) {

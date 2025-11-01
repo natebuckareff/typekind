@@ -31,6 +31,10 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
     return new OptionCodec(sub);
   }
 
+  override equals(other: AnyCodec): boolean {
+    return other instanceof OptionCodec && this.codec.equals(other.codec);
+  }
+
   schema(): OptionSchema {
     return new OptionSchema(this.codec.schema());
   }

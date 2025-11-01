@@ -42,6 +42,36 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
     return new ChoiceSchema(schema);
   }
 
+  override equals(other: AnyCodec): boolean {
+    if (!(other instanceof ChoiceCodec)) {
+      return false;
+    }
+
+    const keys = Object.keys(this.spec);
+    const otherKeys = Object.keys(other.spec);
+
+    if (keys.length !== otherKeys.length) {
+      return false;
+    }
+
+    for (const key of keys) {
+      const codec = this.spec[key];
+      const otherCodec = (other as ChoiceCodec<Spec>).spec[key];
+
+      if (codec === null || otherCodec === null) {
+        if (codec !== otherCodec) {
+          return false;
+        }
+      } else {
+        if (!codec || !otherCodec || !codec.equals(otherCodec)) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   override serializeImpl(input: InferChoiceType<Spec>, ctx?: Context): Json {
     const kind = input.kind as string;
     const spec: AnyCodec | undefined | null = this.spec[kind];

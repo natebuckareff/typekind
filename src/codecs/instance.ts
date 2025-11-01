@@ -1,4 +1,4 @@
-import { Codec } from '../codec.js';
+import { type AnyCodec, Codec } from '../codec.js';
 import { CodecError } from '../codec-error.js';
 import type { Context } from '../context.js';
 import type { Json } from '../json.js';
@@ -22,6 +22,10 @@ export class InstanceCodec<Cls extends Class<any, any[]>> extends Codec<
 
   schema(): InstanceSchema {
     return new InstanceSchema(this.cls.name);
+  }
+
+  override equals(other: AnyCodec): boolean {
+    return other instanceof InstanceCodec && other.cls === this.cls;
   }
 
   override serializeImpl(value: this['Type'], _?: Context): Json {
