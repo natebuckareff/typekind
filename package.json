@@ -1,6 +1,6 @@
 {
   "name": "typekind",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "author": "Nate Buckareff",
   "description": "Strongly typed JSON serialization",
   "license": "MIT",
