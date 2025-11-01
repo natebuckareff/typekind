@@ -25,7 +25,10 @@ export class InstanceCodec<Cls extends Class<any, any[]>> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
-    return other instanceof InstanceCodec && other.cls === this.cls;
+    return (
+      this === other ||
+      (other instanceof InstanceCodec && other.cls === this.cls)
+    );
   }
 
   override serializeImpl(value: this['Type'], _?: Context): Json {

@@ -43,6 +43,10 @@ export class ChoiceCodec<Spec extends ChoiceSpec> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
+    if (this === other) {
+      return true;
+    }
+
     if (!(other instanceof ChoiceCodec)) {
       return false;
     }

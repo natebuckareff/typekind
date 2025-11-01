@@ -32,7 +32,10 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
-    return other instanceof OptionCodec && this.codec.equals(other.codec);
+    return (
+      this === other ||
+      (other instanceof OptionCodec && this.codec.equals(other.codec))
+    );
   }
 
   schema(): OptionSchema {

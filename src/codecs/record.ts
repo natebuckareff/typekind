@@ -35,10 +35,12 @@ export class RecordCodec<
   }
 
   override equals(other: AnyCodec): boolean {
-    if (!(other instanceof RecordCodec)) {
-      return false;
-    }
-    return this.key.equals(other.key) && this.value.equals(other.value);
+    return (
+      this === other ||
+      (other instanceof RecordCodec &&
+        this.key.equals(other.key) &&
+        this.value.equals(other.value))
+    );
   }
 
   schema(): RecordSchema {

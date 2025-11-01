@@ -28,7 +28,10 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
-    return other instanceof ArrayCodec && this.codec.equals(other.codec);
+    return (
+      this === other ||
+      (other instanceof ArrayCodec && this.codec.equals(other.codec))
+    );
   }
 
   override serializeImpl(value: this['Type'], ctx?: Context): Json[] {

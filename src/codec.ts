@@ -55,7 +55,7 @@ export abstract class Codec<Type, S extends AnySchema> {
   }
 
   equals(other: AnyCodec): boolean {
-    return other instanceof this.constructor;
+    return this === other || other instanceof this.constructor;
   }
 
   serialize(value: Type, ctx?: Context): Json {

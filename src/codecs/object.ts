@@ -59,6 +59,10 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
+    if (this === other) {
+      return true;
+    }
+
     if (!(other instanceof ObjectCodec)) {
       return false;
     }

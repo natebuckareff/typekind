@@ -35,6 +35,10 @@ export class TupleCodec<const Elements extends AnyCodec[]> extends Codec<
   }
 
   override equals(other: AnyCodec): boolean {
+    if (this === other) {
+      return true;
+    }
+
     if (!(other instanceof TupleCodec)) {
       return false;
     }
