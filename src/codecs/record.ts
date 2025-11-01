@@ -38,8 +38,8 @@ export class RecordCodec<
     return new RecordSchema(this.key.schema(), this.value.schema());
   }
 
-  serialize(value: this['Type'], ctx?: Context): Json {
-    ctx ??= new Context();
+  override serializeImpl(value: this['Type'], ctx?: Context): Json {
+    ctx ??= Context.create();
     let out: any | undefined;
     for (const key in value) {
       const field = value[key];
@@ -57,11 +57,11 @@ export class RecordCodec<
     return out ?? value;
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
     if (!isObject(json)) {
       CodecError.throw(this, typeof json, ctx);
     }
-    ctx ??= new Context();
+    ctx ??= Context.create();
     let out: any | undefined;
     for (const key in json) {
       const field = json[key]!;

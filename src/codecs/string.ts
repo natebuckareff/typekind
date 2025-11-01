@@ -23,11 +23,11 @@ export class StringCodec
     return key;
   }
 
-  serialize(value: string, _?: Context): Json {
+  override serializeImpl(value: string, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): string {
+  override deserializeImpl(json: Json, ctx?: Context): string {
     if (typeof json !== 'string') {
       CodecError.throw(this, typeof json, ctx);
     }

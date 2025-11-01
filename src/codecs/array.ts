@@ -27,8 +27,8 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
     return new ArraySchema(this.codec.schema());
   }
 
-  serialize(value: this['Type'], ctx?: Context): Json[] {
-    ctx ??= new Context();
+  override serializeImpl(value: this['Type'], ctx?: Context): Json[] {
+    ctx ??= Context.create();
     let out: any[] | undefined;
     for (let i = 0; i < value.length; i++) {
       const element = value[i]!;
@@ -43,8 +43,8 @@ export class ArrayCodec<T extends AnyCodec> extends Codec<
     return out ?? value;
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
-    ctx ??= new Context();
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
+    ctx ??= Context.create();
     if (!isArray(json)) {
       CodecError.throw(this, typeof json, ctx);
     }

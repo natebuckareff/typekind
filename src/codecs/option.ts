@@ -35,7 +35,7 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
     return new OptionSchema(this.codec.schema());
   }
 
-  serialize(value: T['Type'] | undefined, ctx?: Context): Json {
+  override serializeImpl(value: T['Type'] | undefined, ctx?: Context): Json {
     if (value === undefined) {
       return null;
     } else {
@@ -43,7 +43,7 @@ export class OptionCodec<T extends AnyCodec> extends Codec<
     }
   }
 
-  deserialize(json: Json, ctx?: Context): T['Type'] {
+  override deserializeImpl(json: Json, ctx?: Context): T['Type'] {
     if (json === null) {
       return undefined;
     } else {

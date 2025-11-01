@@ -34,8 +34,8 @@ export class TupleCodec<const Elements extends AnyCodec[]> extends Codec<
     return element;
   }
 
-  serialize(value: this['Type'], ctx?: Context): Json {
-    ctx ??= new Context();
+  override serializeImpl(value: this['Type'], ctx?: Context): Json {
+    ctx ??= Context.create();
 
     if (value.length !== this.codecs.length) {
       throw new CodecError(`tuple length mismatch`, ctx);
@@ -56,8 +56,8 @@ export class TupleCodec<const Elements extends AnyCodec[]> extends Codec<
     return out ?? value;
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
-    ctx ??= new Context();
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
+    ctx ??= Context.create();
 
     if (!isArray(json)) {
       CodecError.throw(this, typeof json, ctx);

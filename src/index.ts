@@ -9,6 +9,7 @@ export * from './json.js';
 export * from './schema.js';
 export * from './util.js';
 
+export * from './codecs/any.js';
 export * from './codecs/array.js';
 export * from './codecs/bigint.js';
 export * from './codecs/bool.js';

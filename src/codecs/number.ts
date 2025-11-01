@@ -29,11 +29,11 @@ export class NumberCodec
     return key;
   }
 
-  serialize(value: number, _?: Context): Json {
+  override serializeImpl(value: number, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): number {
+  override deserializeImpl(json: Json, ctx?: Context): number {
     if (typeof json !== 'number') {
       CodecError.throw(this, typeof json, ctx);
     }

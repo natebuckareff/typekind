@@ -26,11 +26,11 @@ export class BoolCodec
     return key;
   }
 
-  serialize(value: boolean, _?: Context): Json {
+  override serializeImpl(value: boolean, _?: Context): Json {
     return value;
   }
 
-  deserialize(json: Json, ctx?: Context): boolean {
+  override deserializeImpl(json: Json, ctx?: Context): boolean {
     if (typeof json !== 'boolean') {
       CodecError.throw(this, typeof json, ctx);
     }

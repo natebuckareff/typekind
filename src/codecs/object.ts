@@ -58,8 +58,8 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
     return codec;
   }
 
-  serialize(input: this['Type'], ctx?: Context): Json {
-    ctx ??= new Context();
+  override serializeImpl(input: this['Type'], ctx?: Context): Json {
+    ctx ??= Context.create();
     let out: any | undefined;
 
     for (const [key, codec] of Object.entries(this.spec)) {
@@ -90,12 +90,12 @@ export class ObjectCodec<Spec extends ObjectSpec> extends Codec<
     return out ?? input;
   }
 
-  deserialize(json: Json, ctx?: Context): this['Type'] {
+  override deserializeImpl(json: Json, ctx?: Context): this['Type'] {
     if (!isObject(json)) {
       CodecError.throw(this, typeof json, ctx);
     }
 
-    ctx ??= new Context();
+    ctx ??= Context.create();
     let out: any | undefined;
 
     for (const key of Object.keys(this.spec)) {
