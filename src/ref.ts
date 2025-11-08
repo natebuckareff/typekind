@@ -18,7 +18,7 @@ export type RefId = number | string;
 
 export interface Ref {
   id: RefId;
-  serialize?: (proxy: RefProxy, ref: Ref) => number | undefined;
+  serialize?: (proxy: RefProxy, ref: Ref) => RefId | undefined;
 }
 
 export interface RefProxy {
@@ -31,7 +31,7 @@ export interface RefConfig<T> {
     get?: (target: T, p: string | symbol, receiver: any) => any;
     apply?: (target: T, thisArg: any, argArray: any[]) => any;
   };
-  serialize?: (proxy: RefProxy, ref: Ref) => number | undefined;
+  serialize?: (proxy: RefProxy, ref: Ref) => RefId | undefined;
 }
 
 export function isRefProxy(value: unknown): value is RefProxy {
