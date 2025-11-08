@@ -14,8 +14,10 @@ const throwError = (action: string): never => {
   throw Error(`cannot ${action} a ref placeholder value`);
 };
 
+export type RefId = number | string;
+
 export interface Ref {
-  id: number;
+  id: RefId;
   serialize?: (proxy: RefProxy, ref: Ref) => number | undefined;
 }
 
@@ -42,7 +44,7 @@ export function unwrapRef(value: unknown): Ref | undefined {
   }
 }
 
-export function trySerializeRef<T>(value: T): ['@ref', number] | undefined {
+export function trySerializeRef<T>(value: T): ['@ref', RefId] | undefined {
   if (isRefProxy(value)) {
     const ref = value[refSymbol];
     const override = ref.serialize?.(value, ref);
@@ -60,19 +62,19 @@ export function tryDeserializeRef<C extends AnyCodec>(
     if (value[0] === '@ref') {
       const id = value[1];
       const typeOf = typeof id;
-      if (typeOf !== 'number') {
-        CodecError.throw('numeric ref value', typeOf, ctx);
+      if (typeOf !== 'number' && typeOf !== 'string') {
+        CodecError.throw('numeric or string ref value', typeOf, ctx);
       }
       if (ctx === undefined) {
         throw Error('context is required to deserialize refs');
       }
-      return ctx.resolve(codec, id as number);
+      return ctx.resolve(codec, id as RefId);
     }
   }
 }
 
 export function createRef<T extends object>(
-  id: number,
+  id: RefId,
   config?: RefConfig<T>,
 ): T {
   return new Proxy<T>(ref as T, {

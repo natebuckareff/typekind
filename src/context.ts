@@ -1,10 +1,10 @@
 import type { AnyCodec } from './codec.js';
-import { createRef, type RefConfig } from './ref.js';
+import { createRef, type RefConfig, type RefId } from './ref.js';
 
 export class Context {
   private constructor(
     public path: (number | string)[],
-    private registry?: Map<number, { codec: AnyCodec; value: unknown }>,
+    private registry?: Map<RefId, { codec: AnyCodec; value: unknown }>,
   ) {}
 
   static create(): Context {
@@ -22,7 +22,7 @@ export class Context {
     return createRef(id, config);
   }
 
-  resolve<C extends AnyCodec>(codec: C, id: number): C['Type'] {
+  resolve<C extends AnyCodec>(codec: C, id: RefId): C['Type'] {
     if (this.registry === undefined) {
       throw Error('registiry not initialized');
     }
